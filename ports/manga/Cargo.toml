@@ -1,0 +1,7 @@
+[package]
+name = "manga"
+version = "0.1.0"
+authors = ["Hentioe_Cl <me@bluerain.io>"]
+edition = "2018"
+
+[dependencies]

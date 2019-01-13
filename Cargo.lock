@@ -1,0 +1,8 @@
+[[package]]
+name = "libcore"
+version = "0.1.0"
+
+[[package]]
+name = "manga"
+version = "0.1.0"
+

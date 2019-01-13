@@ -1,0 +1,6 @@
+/target
+**/*.rs.bk
+
+/ipkg-rs
+/build-ipk
+/.cargo

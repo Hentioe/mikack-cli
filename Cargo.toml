@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "ports/libcore",
+    "ports/manga"
+]
