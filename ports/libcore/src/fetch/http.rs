@@ -20,7 +20,7 @@ pub fn request(url: &str) -> ErrResult<Response> {
 pub struct SendHelper {
     client: reqwest::Client,
     headers: HeaderMap,
-    response: Option<Response>,
+    pub response: Option<Response>,
 }
 
 impl SendHelper {
