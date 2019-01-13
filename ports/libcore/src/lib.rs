@@ -1,5 +1,5 @@
 pub mod errors;
-pub mod fetcher;
+pub mod fetch;
 
 #[cfg(test)]
 mod tests {
