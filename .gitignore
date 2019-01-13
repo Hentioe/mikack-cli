@@ -1,6 +1,7 @@
 /target
 **/*.rs.bk
 
+/.idea
 /ipkg-rs
 /build-ipk
 /.cargo

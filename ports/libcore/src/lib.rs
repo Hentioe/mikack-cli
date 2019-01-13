@@ -1,3 +1,5 @@
+pub mod fetcher;
+
 #[cfg(test)]
 mod tests {
     #[test]
