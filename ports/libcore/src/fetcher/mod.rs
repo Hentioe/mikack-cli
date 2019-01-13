@@ -1,3 +1,5 @@
+use crate::errors::*;
+
 pub mod origins;
 
 // 漫画（图片集）平台
@@ -87,9 +89,9 @@ impl Page {
 
 trait Fetcher {
     // 显示平台漫画索引
-    fn index(&self, more: u32) -> Vec<Section>;
+    fn index(&self, more: u32) -> Result<Vec<Section>>;
     // 指定漫画的章节列表
-    fn sections(&self, detail: &Detail) -> &Detail;
+    fn fetch_sections(&self, detail: &mut Detail) -> Result<()>;
     // 抓取完整的一个章节（话）
-    fn fetch(&self, section: &Section) -> &Section;
+    fn fetch_pages(&self, section: &mut Section) -> Result<()>;
 }
