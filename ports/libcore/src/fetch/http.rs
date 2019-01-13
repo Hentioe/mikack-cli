@@ -12,18 +12,18 @@ lazy_static! {
 }
 
 pub fn request(url: &str) -> ErrResult<Response> {
-    let mut helper = HttpHelper::new();
+    let mut helper = SendHelper::new();
     helper.send_get(url)?;
     Ok(helper.response.unwrap())
 }
 
-pub struct HttpHelper {
+pub struct SendHelper {
     client: reqwest::Client,
     headers: HeaderMap,
     response: Option<Response>,
 }
 
-impl HttpHelper {
+impl SendHelper {
     pub fn with_headers(headers: HeaderMap) -> Self {
         let client = reqwest::Client::new();
         let mut headers_n = headers.clone();
@@ -103,9 +103,9 @@ mod tests {
     }
 
     #[test]
-    fn test_http_helper() {
+    fn test_send_helper() {
         let url = "http://www.hhmmoo.com/comic/";
-        let mut helper = HttpHelper::new();
+        let mut helper = SendHelper::new();
         helper.send_get(url);
         assert_eq!(true, helper.done());
         assert_eq!(true, helper.succeed().unwrap());
