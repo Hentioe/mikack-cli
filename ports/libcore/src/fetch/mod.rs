@@ -2,6 +2,7 @@ use crate::errors::*;
 
 pub mod http;
 pub mod origins;
+pub mod parser;
 
 // 漫画（图片集）平台
 pub struct Platform {
