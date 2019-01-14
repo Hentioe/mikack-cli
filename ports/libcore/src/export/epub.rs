@@ -1,5 +1,5 @@
 use super::*;
-use crate::{download, ziputil};
+use crate::{archive, download};
 use std::fs::File;
 use std::io::prelude::*;
 use tera::{Context, Tera};
@@ -228,7 +228,7 @@ impl Exporter for Epub {
 
         // 打包成 epub
         let dst_file = format!("{}/{}.epub", &output_dir, &self.section.name);
-        ziputil::doit(&cache_dir, &dst_file)?;
+        archive::doit(&cache_dir, &dst_file)?;
         Ok(dst_file)
     }
 }

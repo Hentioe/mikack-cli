@@ -1,8 +1,10 @@
+pub mod archive;
+pub mod check;
 pub mod download;
 pub mod errors;
 pub mod export;
 pub mod fetch;
-pub mod ziputil;
+pub mod jsrt;
 
 #[cfg(test)]
 mod tests {
