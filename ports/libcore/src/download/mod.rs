@@ -34,9 +34,9 @@ pub fn from_url(url: &str, dir: &str, name: &str) -> FaultTolerance<OutputFile> 
 
 pub fn from_helper(helper: &mut SendHelper, dir: &str, name: &str) -> FaultTolerance<OutputFile> {
     if !helper.done() {
-        return Err(err_msg("Please send the request"));
+        return Err(err_msg("please send the request"));
     } else if !helper.succeed()? {
-        return Err(err_msg("Download request failed"));
+        return Err(err_msg("download request failed"));
     }
     let resp = helper.response.as_mut().unwrap();
     let mut buf: Vec<u8> = vec![];
@@ -63,7 +63,7 @@ fn get_extension_from_mime(mime_s: &str) -> &str {
 
 pub fn from_section(section: &mut Section) -> FaultTolerance<()> {
     if !section.has_page() {
-        return Err(err_msg("Does not contain a section list"));
+        return Err(err_msg("does not contain a section list"));
     }
     let dir = format!("manga_res/{}/origins", &section.name);
     std::fs::create_dir_all(&dir)?;

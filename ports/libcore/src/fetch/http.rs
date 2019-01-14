@@ -68,7 +68,7 @@ impl SendHelper {
             let resp = self.response.as_ref().unwrap();
             Ok(resp.status().is_success())
         } else {
-            Err(err_msg("Request not sent complete"))
+            Err(err_msg("request not sent complete"))
         }
     }
 
@@ -78,7 +78,7 @@ impl SendHelper {
                 if r {
                     Result::Ok(self.response.as_mut().unwrap().text().unwrap())
                 } else {
-                    Result::Err(err_msg("Did not get the correct response"))
+                    Result::Err(err_msg("did not get the correct response"))
                 }
             }
             Err(e) => Result::Err(e),
