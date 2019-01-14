@@ -48,7 +48,6 @@ pub fn from_helper(helper: &mut SendHelper, dir: &str, name: &str) -> FaultToler
     let extension_name = get_extension_from_mime(&mime_s);
     let mut dst_path = PathBuf::from(&path);
     dst_path.set_extension(extension_name);
-    println!("path: {}, dst_path: {}", &path, &dst_path.to_str().unwrap());
     std::fs::rename(&path, &dst_path)?;
     Ok(OutputFile::new(&mime_s, PathBuf::from(&dst_path)))
 }
