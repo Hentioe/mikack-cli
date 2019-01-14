@@ -1,6 +1,6 @@
 use crate::{
     errors::*,
-    fetch::{html, http, *},
+    fetch::{html, http, prelude::*, *},
     jsrt,
 };
 use lazy_static::lazy_static;
@@ -10,7 +10,6 @@ use serde_json::Value;
 pub struct Dmzj;
 
 impl Fetcher for Dmzj {
-    // 显示平台漫画索引
     fn index(&self, more: u32) -> Result<Vec<Detail>> {
         let mut det_list: Vec<Detail> = vec![];
         let url = if more > 0 {
@@ -44,7 +43,7 @@ impl Fetcher for Dmzj {
             http::Result::Err(e) => Err(e),
         }
     }
-    // 抓取章节列表
+
     fn fetch_sections(&self, detail: &mut Detail) -> Result<()> {
         let url = &detail.url;
         let mut helper = http::SendHelper::new();
@@ -90,7 +89,6 @@ impl Fetcher for Dmzj {
         }
     }
 
-    // 抓取完整的一话
     fn fetch_pages(&self, section: &mut Section) -> Result<()> {
         let mut helper = http::SendHelper::new();
         helper.send_get(&section.url)?;

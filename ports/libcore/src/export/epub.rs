@@ -1,4 +1,4 @@
-use super::*;
+use super::{prelude::*, *};
 use crate::{archive, download};
 use std::fs::File;
 use std::io::prelude::*;
@@ -179,7 +179,7 @@ impl Epub {
 }
 
 impl Exporter for Epub {
-    fn save_from_section(&mut self) -> Result<String> {
+    fn save(&mut self) -> Result<String> {
         // 下载整个 Section 的资源
         download::from_section(&mut self.section)?;
         // 建立输出目录
@@ -248,7 +248,7 @@ mod tests {
         section.add_page(Page::new(1, "https://images.dmzj.com/l/%E6%B5%81%E6%B5%AA%E7%8C%AB%E7%9A%84%E4%B8%80%E7%94%9F/%E7%AC%AC01%E8%AF%9D/002.jpg"));
         section.add_page(Page::new(2, "https://images.dmzj.com/l/%E6%B5%81%E6%B5%AA%E7%8C%AB%E7%9A%84%E4%B8%80%E7%94%9F/%E7%AC%AC01%E8%AF%9D/003.jpg"));
         let mut epub = Epub::new(platform, section);
-        let dst_file = epub.save_from_section().unwrap();
+        let dst_file = epub.save().unwrap();
         assert!(std::path::Path::new(&dst_file).exists());
     }
 }
