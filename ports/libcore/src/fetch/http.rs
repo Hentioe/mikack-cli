@@ -106,7 +106,7 @@ mod tests {
     fn test_send_helper() {
         let url = "http://www.hhmmoo.com/comic/";
         let mut helper = SendHelper::new();
-        helper.send_get(url);
+        helper.send_get(url).unwrap();
         assert_eq!(true, helper.done());
         assert_eq!(true, helper.succeed().unwrap());
         match helper.result() {

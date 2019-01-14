@@ -86,7 +86,7 @@ mod tests {
         let dir = "../../target";
         let name = "mini";
         let path = format!("{}/{}.jpeg", dir, name);
-        std::fs::remove_file(&path);
+        std::fs::remove_file(&path).unwrap_or(());
         let of = from_url(
             "http://personal.psu.edu/users/w/z/wzz5072/mini.jpg",
             dir,
@@ -94,7 +94,7 @@ mod tests {
         )
         .unwrap();
         assert_eq!(true, of.path.exists());
-        std::fs::remove_file(&path);
+        std::fs::remove_file(&path).unwrap_or(());
     }
 
     #[test]

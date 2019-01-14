@@ -3,7 +3,7 @@ use serde_derive::{Deserialize, Serialize};
 
 pub mod html;
 pub mod http;
-pub mod origins;
+pub mod upstream;
 
 // 漫画（图片集）平台
 #[derive(Debug)]
@@ -111,9 +111,9 @@ impl Page {
 
 trait Fetcher {
     // 显示平台漫画索引
-    fn index(&self, more: u32) -> Result<Vec<Section>>;
-    // 指定漫画的章节列表
+    fn index(&self, more: u32) -> Result<Vec<Detail>>;
+    // 抓取章节列表
     fn fetch_sections(&self, detail: &mut Detail) -> Result<()>;
-    // 抓取完整的一个章节（话）
+    // 抓取完整的一话
     fn fetch_pages(&self, section: &mut Section) -> Result<()>;
 }

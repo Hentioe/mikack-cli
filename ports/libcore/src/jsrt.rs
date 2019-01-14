@@ -23,7 +23,7 @@ fn check_node() -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use serde_json::{Result, Value};
+    use serde_json::Value;
 
     #[test]
     fn test_read_output() {
