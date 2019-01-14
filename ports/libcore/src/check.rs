@@ -1,10 +1,11 @@
-use std::process::Command;
+use std::process::{Command, Stdio};
 
 pub fn exec_succeed(program: &str, args: &[&str]) -> bool {
     let mut cmd = Command::new(program);
     for arg in args {
         cmd.arg(*arg);
     }
+    cmd.stdout(Stdio::null()).stderr(Stdio::null());
     match cmd.status() {
         Ok(status) => status.success(),
         Err(_e) => false,
