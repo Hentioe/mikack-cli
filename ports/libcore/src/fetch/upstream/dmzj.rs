@@ -106,7 +106,7 @@ impl Fetcher for Dmzj {
                     .ok_or(err_msg("no encrypted code block found"))?
                     .as_str();
                 let wrapper_code = format!("{}\n{}", &code, "console.log(JSON.stringify({pages: eval(pages), name: `${g_comic_name} ${g_chapter_name}`}));");
-                // 获取给 JSRT 并获取结果
+                // 托管给 JSRT 并获取结果
                 let output = jsrt::read_output(&wrapper_code)?;
                 let v: Value = serde_json::from_str(&output)?;
                 //                let name = v["name"].as_str().ok_or(err_msg(format!(
