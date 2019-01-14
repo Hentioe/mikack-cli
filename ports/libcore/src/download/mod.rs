@@ -48,6 +48,7 @@ pub fn from_helper(helper: &mut SendHelper, dir: &str, name: &str) -> FaultToler
     let extension_name = get_extension_from_mime(&mime_s);
     let mut dst_path = PathBuf::from(&path);
     dst_path.set_extension(extension_name);
+    println!("path: {}, dst_path: {}", &path, &dst_path.to_str().unwrap());
     std::fs::rename(&path, &dst_path)?;
     Ok(OutputFile::new(&mime_s, PathBuf::from(&dst_path)))
 }
@@ -100,12 +101,12 @@ mod tests {
     #[test]
     fn test_from_section_download() {
         let mut section = Section::new(
-            "流浪猫的一生  第01话",
-            "https://manhua.dmzj.com/liulangmaodeyisheng/81737.shtml#@page=1",
+            "流浪猫的一生  第02话",
+            "https://manhua.dmzj.com/liulangmaodeyisheng/81975.shtml#@page=1",
         );
-        section.add_page(Page::new(0, "https://images.dmzj.com/l/%E6%B5%81%E6%B5%AA%E7%8C%AB%E7%9A%84%E4%B8%80%E7%94%9F/%E7%AC%AC01%E8%AF%9D/001.jpg"));
-        section.add_page(Page::new(1, "https://images.dmzj.com/l/%E6%B5%81%E6%B5%AA%E7%8C%AB%E7%9A%84%E4%B8%80%E7%94%9F/%E7%AC%AC01%E8%AF%9D/002.jpg"));
-        section.add_page(Page::new(2, "https://images.dmzj.com/l/%E6%B5%81%E6%B5%AA%E7%8C%AB%E7%9A%84%E4%B8%80%E7%94%9F/%E7%AC%AC01%E8%AF%9D/003.jpg"));
+        section.add_page(Page::new(0, "https://images.dmzj.com/l/%E6%B5%81%E6%B5%AA%E7%8C%AB%E7%9A%84%E4%B8%80%E7%94%9F/%E7%AC%AC02%E8%AF%9D/001.jpg"));
+        section.add_page(Page::new(1, "https://images.dmzj.com/l/%E6%B5%81%E6%B5%AA%E7%8C%AB%E7%9A%84%E4%B8%80%E7%94%9F/%E7%AC%AC02%E8%AF%9D/003.jpg"));
+        section.add_page(Page::new(2, "https://images.dmzj.com/l/%E6%B5%81%E6%B5%AA%E7%8C%AB%E7%9A%84%E4%B8%80%E7%94%9F/%E7%AC%AC02%E8%AF%9D/004.jpg"));
         from_section(&mut section).unwrap();
     }
 }
