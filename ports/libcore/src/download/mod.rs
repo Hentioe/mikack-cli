@@ -40,11 +40,24 @@ pub fn from_helper(helper: &mut SendHelper, dir: &str, name: &str) -> FaultToler
     let resp = helper.response.as_mut().unwrap();
     let mut buf: Vec<u8> = vec![];
     resp.copy_to(&mut buf)?;
-    let path = format!("{}/{}.jpg", dir, name);
-    println!("{}", &path);
+    let path = format!("{}/{}", dir, name);
     let mut f = File::create(&path)?;
     f.write_all(&mut buf)?;
-    Ok(OutputFile::new("image/jpg", PathBuf::from(&path)))
+    let mime_s = tree_magic::from_u8(&buf);
+    let extension_name = get_extension_from_mime(&mime_s);
+    let mut dst_path = PathBuf::from(&path);
+    dst_path.set_extension(extension_name);
+    std::fs::rename(&path, &dst_path)?;
+    Ok(OutputFile::new(&mime_s, PathBuf::from(&dst_path)))
+}
+
+fn get_extension_from_mime(mime_s: &str) -> &str {
+    let types: Vec<&str> = mime_s.split("/").collect();
+    if types.len() < 2 {
+        "jpg"
+    } else {
+        types.get(1).unwrap_or(&"jpg")
+    }
 }
 
 #[cfg(test)]
@@ -54,10 +67,15 @@ mod tests {
     #[test]
     fn test_download() {
         let dir = "../../target";
-        let name = "baidu";
-        let path = format!("{}/{}.jpg", dir, name);
+        let name = "mini";
+        let path = format!("{}/{}.jpeg", dir, name);
         std::fs::remove_file(path);
-        let of = from_url("https://www.baidu.com/img/bd_logo1.png", dir, name).unwrap();
+        let of = from_url(
+            "http://personal.psu.edu/users/w/z/wzz5072/mini.jpg",
+            dir,
+            name,
+        )
+        .unwrap();
         assert_eq!(true, of.path.exists());
     }
 }
