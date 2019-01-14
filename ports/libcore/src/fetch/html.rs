@@ -12,7 +12,7 @@ pub fn parse_fragment(html: &str) -> Html {
 
 pub fn parse_select(selectors: &str) -> Result<Selector> {
     Ok(Selector::parse(selectors)
-        .map_err(|e| err_msg(format!("Selectors: `{}` parsing failed", selectors)))?)
+        .map_err(|_e| err_msg(format!("Selectors: `{}` parsing failed", selectors)))?)
 }
 
 #[cfg(test)]

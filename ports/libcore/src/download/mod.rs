@@ -4,7 +4,6 @@ use crate::fetch::http::*;
 use crate::fetch::*;
 use reqwest::header::{HeaderValue, REFERER};
 use std::fs::File;
-use std::fs::OpenOptions;
 use std::io::prelude::*;
 use std::path::PathBuf;
 
@@ -29,8 +28,8 @@ impl OutputFile {
 
 pub fn from_url(url: &str, dir: &str, name: &str) -> FaultTolerance<OutputFile> {
     let mut helper = SendHelper::new();
-    helper.send_get(url);
-    from_helper(&mut helper, dir, name)
+    helper.send_get(url)?;
+    Ok(from_helper(&mut helper, dir, name)?)
 }
 
 pub fn from_helper(helper: &mut SendHelper, dir: &str, name: &str) -> FaultTolerance<OutputFile> {
@@ -70,7 +69,7 @@ pub fn from_section(section: &mut Section) -> FaultTolerance<()> {
     std::fs::create_dir_all(&dir)?;
     for page in &mut section.page_list {
         let mut helper = SendHelper::with_header(REFERER, HeaderValue::from_str(&section.url)?);
-        helper.send_get(&page.url);
+        helper.send_get(&page.url)?;
         let of = from_helper(&mut helper, &dir, &format!("{}", page.p))?;
         page.set_mime(&of.mime);
         page.set_extension((&of).path.extension().unwrap().to_str().unwrap());
