@@ -20,7 +20,7 @@ fn main() -> Result<()> {
         .find(&url)
         .ok_or(err_msg("invalid or unsupported address"))?;
     let platform = Platform::new("动漫之家", "https://manhua.dmzj.com");
-    let mut section = Section::new("[待抓取]", &url);
+    let mut section = Section::new(UNKNOWN_NAME, &url);
     upstream::dmzj::Dmzj {}.fetch_pages(&mut section)?;
     let path = epub::Epub::new(platform, section).save()?;
     println!("Succeed: {}", &path);

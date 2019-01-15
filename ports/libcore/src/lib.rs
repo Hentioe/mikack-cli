@@ -1,10 +1,10 @@
 pub mod archive;
 pub mod check;
-pub mod download;
 pub mod errors;
 pub mod export;
 pub mod fetch;
 pub mod jsrt;
+pub mod storage;
 
 #[cfg(test)]
 mod tests {

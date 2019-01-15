@@ -38,6 +38,8 @@ pub struct Page {
     pub extension: String,
 }
 
+pub const UNKNOWN_NAME: &'static str = "[UNNAMED]";
+
 impl Platform {
     pub fn new(name: &str, url: &str) -> Self {
         Platform {
@@ -88,6 +90,10 @@ impl Section {
 
     pub fn has_page(&self) -> bool {
         self.page_list.len() > 0
+    }
+
+    pub fn has_name(&self) -> bool {
+        !(self.name == UNKNOWN_NAME)
     }
 }
 

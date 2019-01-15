@@ -107,7 +107,7 @@ impl Fetcher for Dmzj {
                 // 托管给 JSRT 并获取结果
                 let output = jsrt::read_output(&wrapper_code)?;
                 let v: Value = serde_json::from_str(&output)?;
-                if section.name == "[待抓取]" {
+                if !section.has_name() {
                     section.name = v["name"]
                         .as_str()
                         .ok_or(err_msg(format!(

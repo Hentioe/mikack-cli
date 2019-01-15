@@ -1,5 +1,5 @@
 use super::{prelude::*, *};
-use crate::{archive, download};
+use crate::{archive, storage};
 use chrono::{offset::Utc, DateTime};
 use std::fs::File;
 use std::io::prelude::*;
@@ -202,7 +202,7 @@ impl Epub {
 impl Exporter for Epub {
     fn save(&mut self) -> Result<String> {
         // 下载整个 Section 的资源
-        download::from_section(&mut self.section)?;
+        storage::from_section(&mut self.section)?;
         // 建立输出目录
         let output_dir = "manga_res/outputs";
         std::fs::create_dir_all(output_dir)?;
