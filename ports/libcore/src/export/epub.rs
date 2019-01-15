@@ -1,5 +1,6 @@
 use super::{prelude::*, *};
 use crate::{archive, download};
+use chrono::{offset::Utc, DateTime};
 use std::fs::File;
 use std::io::prelude::*;
 use tera::{Context, Tera};
@@ -36,8 +37,7 @@ impl Epub {
       <h1>版权信息</h1>
       <p>图书名：{{ name }}</p>
       <p>
-         来源于：
-         <a href="{{ platform_url }}">{{ platform_name }}</a>
+         来源于：<a href="{{ platform_url }}">{{ platform_name }}</a>
       </p>
       <p>操作人：{{ operator }}({{ version }})</p>
       <hr />
@@ -89,8 +89,9 @@ impl Epub {
       <dc:creator opf:role="aut" opf:file-as="MANGA-BOT">MANGA-BOT</dc:creator>
       <dc:identifier opf:scheme="uuid" id="uuid_id">{{ uuid }}</dc:identifier>
       <dc:identifier opf:scheme="calibre" id="calibre_id">{{ calibre_id }}</dc:identifier>
+      <dc:publisher>manga.bluerain.io</dc:publisher>
       <dc:contributor opf:file-as="manga-rs" opf:role="bkp">manga-rs ({{ version }}) [https://manga.bluerain.io]</dc:contributor>
-      <dc:date>0101-01-01T00:00:00+00:00</dc:date>
+      <dc:date>{{ date_time }}</dc:date>
       <dc:language>eng</dc:language>
       <meta name="cover" content="cover" />
    </metadata>
@@ -120,24 +121,33 @@ impl Epub {
         ctx.insert("calibre_id", &self.calibre_id);
         ctx.insert("plist", &self.section.page_list);
         ctx.insert("version", &VERSION);
+        ctx.insert("date_time", &DateTime::from(Utc::now()).to_rfc3339());
         Tera::one_off(&tpl_s, &ctx, false).unwrap()
     }
 
     pub fn render_stylesheet(&self) -> String {
         r#"
-body, html {
-     height: 100%;
+* {
+   padding: 0;
+   margin: 0;
 }
- .album {
-     padding: 0;
-     margin: 0;
-     text-align: center;
+
+html {
+   text-align: center;
 }
- .albumimg {
-     height: 100%;
-     background-position: center;
-     background-repeat: no-repeat;
-     background-size: cover;
+
+.album {
+   background: #000000;
+   height: 100%;
+   text-align: center;
+   vertical-align: top;
+}
+
+.albumimg {
+   margin: 0;
+   height: 100%;
+   text-align: center;
+   vertical-align: top;
 }
         "#
         .trim()
