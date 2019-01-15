@@ -107,10 +107,15 @@ impl Fetcher for Dmzj {
                 // 托管给 JSRT 并获取结果
                 let output = jsrt::read_output(&wrapper_code)?;
                 let v: Value = serde_json::from_str(&output)?;
-                //                let name = v["name"].as_str().ok_or(err_msg(format!(
-                //                    "did not get the name string through JSON conversion, {}",
-                //                    &section.url
-                //                )))?;
+                if section.name == "[待抓取]" {
+                    section.name = v["name"]
+                        .as_str()
+                        .ok_or(err_msg(format!(
+                            "did not get the name string through JSON conversion, {}",
+                            &section.url
+                        )))?
+                        .to_string();
+                }
                 let pages = v["pages"].as_array().ok_or(err_msg(format!(
                     "did not get the pages list through JSON conversion, {}",
                     &section.url
@@ -154,6 +159,7 @@ mod tests {
         Dmzj {}.fetch_sections(&mut datail).unwrap();
         assert_eq!(376, datail.section_list.len());
     }
+
     #[test]
     fn test_dmzj_fetch_pages() {
         let mut section = Section::new(
