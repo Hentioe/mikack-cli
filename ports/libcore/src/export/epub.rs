@@ -132,10 +132,6 @@ impl Epub {
    margin: 0;
 }
 
-html {
-   text-align: center;
-}
-
 .album {
    background: #000000;
    height: 100%;
