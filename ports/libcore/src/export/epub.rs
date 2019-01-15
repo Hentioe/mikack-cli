@@ -10,18 +10,15 @@ pub struct Epub {
     pub platform: Platform,
     pub section: Section,
     pub uuid: String,
-    pub calibre_id: String,
 }
 
 impl Epub {
     pub fn new(platform: Platform, section: Section) -> Self {
-        let uuid = Uuid::new_v4().to_urn().to_string();
-        let calibre_id = Uuid::new_v4().to_urn().to_string();
+        let uuid = Uuid::new_v4().to_hyphenated().to_string();
         Self {
             platform,
             section,
             uuid,
-            calibre_id,
         }
     }
 
@@ -88,7 +85,6 @@ impl Epub {
       <dc:title>{{ title }}</dc:title>
       <dc:creator opf:role="aut" opf:file-as="MANGA-BOT">MANGA-BOT</dc:creator>
       <dc:identifier opf:scheme="uuid" id="uuid_id">{{ uuid }}</dc:identifier>
-      <dc:identifier opf:scheme="calibre" id="calibre_id">{{ calibre_id }}</dc:identifier>
       <dc:publisher>manga.bluerain.io</dc:publisher>
       <dc:contributor opf:file-as="manga-rs" opf:role="bkp">manga-rs ({{ version }}) [https://manga.bluerain.io]</dc:contributor>
       <dc:date>{{ date_time }}</dc:date>
@@ -103,7 +99,7 @@ impl Epub {
       <item href="{{ p.p }}.html" id="page{{ p.p }}" media-type="application/xhtml+xml" />
       <item href="{{ p.p }}.{{ p.extension }}" id="img{{ p.p }}" media-type="{{ p.mime }}" />
       {% endfor %}
-      <item href="{{ plist.0.p }}.{{ plist.0.extension }}" id="cover" media-type="{{ plist.0.mime }}" />
+      <item href="cover.{{ plist.0.extension }}" id="cover" media-type="{{ plist.0.mime }}" />
    </manifest>
    <spine toc="ncx">
       <itemref idref="start" />
@@ -118,7 +114,6 @@ impl Epub {
         let mut ctx = Context::new();
         ctx.insert("title", &self.section.name);
         ctx.insert("uuid", &self.uuid);
-        ctx.insert("calibre_id", &self.calibre_id);
         ctx.insert("plist", &self.section.page_list);
         ctx.insert("version", &VERSION);
         ctx.insert("date_time", &DateTime::from(Utc::now()).to_rfc3339());
@@ -165,7 +160,7 @@ impl Epub {
       <text>{{ name }}</text>
    </docTitle>
    <navMap>
-      <navPoint id="navPoint-0" playOrder="0">
+      <navPoint id="navPoint-00" playOrder="0">
          <navLabel>
             <text>关于</text>
          </navLabel>
@@ -220,21 +215,28 @@ impl Exporter for Epub {
         // start.xhtml
         let mut start_xhtml = File::create(format!("{}/start.xhtml", &cache_dir))?;
         start_xhtml.write_all(self.render_start_xhtml().as_bytes())?;
-        // 循环写入所有的图片 文件 和 xhtml
+        // 循环写入所有的图片页面和文件
         for page in &self.section.page_list {
             let img_name = format!("{}.{}", &page.p, &page.extension);
             let mut img_xhtml = File::create(format!("{}/{}.html", &cache_dir, page.p))?;
-            img_xhtml.write_all(
-                self.render_page_html(&page.p.to_string(), &img_name)
-                    .as_bytes(),
-            )?;
-            std::fs::copy(
-                format!(
-                    "{}/{}/origins/{}",
-                    "manga_res", &self.section.name, &img_name
-                ),
-                format!("{}/{}", &cache_dir, &img_name),
-            )?;
+            {
+                img_xhtml.write_all(
+                    self.render_page_html(&page.p.to_string(), &img_name)
+                        .as_bytes(),
+                )?;
+            }
+            let origin_path = format!(
+                "{}/{}/origins/{}",
+                "manga_res", &self.section.name, &img_name
+            );
+            std::fs::copy(&origin_path, format!("{}/{}", &cache_dir, &img_name))?;
+            // 复制第一张图为封面
+            if page.p == 0 {
+                std::fs::copy(
+                    &origin_path,
+                    format!("{}/{}", &cache_dir, format!("cover.{}", &page.extension)),
+                )?;
+            }
         }
         // 写入 metadata.opf
         let mut metadata = File::create(format!("{}/metadata.opf", &cache_dir))?;

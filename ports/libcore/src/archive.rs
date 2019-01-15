@@ -50,7 +50,6 @@ pub fn doit(src_dir: &str, dst_file: &str) -> zip::result::ZipResult<()> {
         return Err(ZipError::FileNotFound);
     }
 
-    std::fs::remove_file("src.zip").unwrap_or(());
     let path = Path::new(dst_file);
     let file = File::create(&path).unwrap();
 
