@@ -1,6 +1,6 @@
 [package]
 name = "manga"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["Hentioe_Cl <me@bluerain.io>"]
 edition = "2018"
 
