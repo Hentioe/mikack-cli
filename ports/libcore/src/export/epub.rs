@@ -202,7 +202,7 @@ impl Epub {
 impl Exporter for Epub {
     fn save(&mut self) -> Result<String> {
         // 下载整个 Section 的资源
-        storage::from_section(&mut self.section)?;
+        storage::from_section(&mut self.section)?.finish();
         // 建立输出目录
         let output_dir = "manga_res/outputs";
         std::fs::create_dir_all(output_dir)?;

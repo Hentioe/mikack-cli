@@ -1,7 +1,8 @@
-use crate::errors::Result as FaultTolerance;
-use crate::errors::*;
-use crate::fetch::http::*;
-use crate::fetch::*;
+use crate::errors::{Result as FaultTolerance, *};
+use crate::{
+    fetch::{http::*, *},
+    progress::*,
+};
 use reqwest::header::{HeaderValue, REFERER};
 use std::fs::File;
 use std::io::prelude::*;
@@ -61,20 +62,23 @@ fn get_extension_from_mime(mime_s: &str) -> &str {
     }
 }
 
-pub fn from_section(section: &mut Section) -> FaultTolerance<()> {
+pub fn from_section(section: &mut Section) -> FaultTolerance<Progress> {
     if !section.has_page() {
         return Err(err_msg("does not contain a section list"));
     }
     let dir = format!("manga_res/{}/origins", &section.name);
     std::fs::create_dir_all(&dir)?;
+    // 开始循环下载
+    let progress = Progress::new(section.page_list.len() as u64);
     for page in &mut section.page_list {
         let mut helper = SendHelper::with_header(REFERER, HeaderValue::from_str(&section.url)?);
         helper.send_get(&page.url)?;
         let of = from_helper(&mut helper, &dir, &format!("{}", page.p))?;
         page.set_mime(&of.mime);
         page.set_extension((&of).path.extension().unwrap().to_str().unwrap());
+        progress.go();
     }
-    Ok(())
+    Ok(progress)
 }
 
 #[cfg(test)]
