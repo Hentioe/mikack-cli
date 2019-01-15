@@ -150,9 +150,9 @@ mod tests {
 
     #[test]
     fn test_dmzj_fetch_sections() {
-        let mut detial = Detail::new("一拳超人", "https://manhua.dmzj.com/yiquanchaoren/");
-        Dmzj {}.fetch_sections(&mut detial).unwrap();
-        assert_eq!(376, detial.section_list.len());
+        let mut datail = Detail::new("一拳超人", "https://manhua.dmzj.com/yiquanchaoren/");
+        Dmzj {}.fetch_sections(&mut datail).unwrap();
+        assert_eq!(376, datail.section_list.len());
     }
     #[test]
     fn test_dmzj_fetch_pages() {
