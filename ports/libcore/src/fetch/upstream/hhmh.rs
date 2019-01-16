@@ -181,27 +181,29 @@ impl Fetcher for Hhmh {
                             let wrapper_code = format!("{}\n{}", &vars, &DECRYPT_BLOCK);
                             let cur_url = decryption(&wrapper_code, &hd_domain)?;
                             section.add_page(Page::new((n - 1) as u32, &cur_url));
-                            // 解密下一页图片地址
-                            let img_name_attr = doc
-                                .select(&html::parse_select("#hdNextImg")?)
-                                .next()
-                                .ok_or(err_msg(format!(
-                                    "unable to get cipher-text to next image, {}",
-                                    &url
-                                )))?
-                                .value()
-                                .attr("value")
-                                .ok_or(err_msg(format!(
-                                    "unable to get cipher-text to next image, {}",
-                                    &url
-                                )))?;
-                            let vars = format!(
-                                "var hostname='{}'; var imgNameAttr='{}';",
-                                &hostname, img_name_attr
-                            );
-                            let wrapper_code = format!("{}\n{}", &vars, &DECRYPT_BLOCK);
-                            let nex_url = decryption(&wrapper_code, &hd_domain)?;
-                            section.add_page(Page::new((n) as u32, &nex_url));
+                            if n < count {
+                                // 解密下一页图片地址
+                                let img_name_attr = doc
+                                    .select(&html::parse_select("#hdNextImg")?)
+                                    .next()
+                                    .ok_or(err_msg(format!(
+                                        "unable to get cipher-text to next image, {}",
+                                        &url
+                                    )))?
+                                    .value()
+                                    .attr("value")
+                                    .ok_or(err_msg(format!(
+                                        "unable to get cipher-text to next image, {}",
+                                        &url
+                                    )))?;
+                                let vars = format!(
+                                    "var hostname='{}'; var imgNameAttr='{}';",
+                                    &hostname, img_name_attr
+                                );
+                                let wrapper_code = format!("{}\n{}", &vars, &DECRYPT_BLOCK);
+                                let nex_url = decryption(&wrapper_code, &hd_domain)?;
+                                section.add_page(Page::new((n) as u32, &nex_url));
+                            }
                         }
                         http::Result::Err(e) => return Err(e),
                     }
@@ -290,10 +292,10 @@ mod tests {
     #[test]
     fn test_hhmh_fetch_pages() {
         let mut section = Section::new(
-            "一拳超人 第142集",
-            "http://www.hhmmoo.com/page333480/1.html?s=6&d=0",
+            "妖精的尾巴 第542集",
+            "http://www.hhmmoo.com/page285327/1.html?s=4",
         );
         Hhmh {}.fetch_pages(&mut section).unwrap();
-        assert_eq!(28, section.page_list.len());
+        assert_eq!(21, section.page_list.len());
     }
 }
