@@ -53,24 +53,12 @@ impl Fetcher for Hhmh {
         match helper.result() {
             http::Result::Ok(html_s) => {
                 let doc = html::parse_document(&html_s);
-                let title_e = doc
-                    .select(&html::parse_select("#about_kit h1")?)
-                    .next()
-                    .ok_or(err_msg(format!("no title found, {}", &detail.url)))?;
-                let title = title_e.text().next().ok_or(err_msg(format!(
-                    "no title found, {}",
-                    &title_e.inner_html()
-                )))?;
                 for element in doc.select(&html::parse_select(".cVolUl > li > a")?) {
                     let sec = Section::new(
-                        &format!(
-                            "{} {}",
-                            &title,
-                            element.text().next().ok_or(err_msg(format!(
-                                "no text found, {}",
-                                element.inner_html()
-                            )),)?
-                        ),
+                        element
+                            .text()
+                            .next()
+                            .ok_or(err_msg(format!("no text found, {}", element.inner_html())))?,
                         &format!(
                             "{}{}",
                             "http://www.hhmmoo.com",
