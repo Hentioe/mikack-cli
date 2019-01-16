@@ -7,7 +7,7 @@ pub mod prelude;
 pub mod upstream;
 
 // 漫画（图片集）平台
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Platform {
     pub name: String,
     pub url: String,
