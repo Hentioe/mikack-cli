@@ -142,7 +142,28 @@ impl Fetcher for Hhmh {
                         &section.url
                     )))?
                     .parse::<i32>()?;
-                for n in 1..(count + 1) {
+                let hd_domain = doc
+                    .select(&html::parse_select("#hdDomain")?)
+                    .next()
+                    .ok_or(err_msg(format!(
+                        "did not get the hd_domain decryption parameter {}",
+                        &section.url
+                    )))?
+                    .value()
+                    .attr("value")
+                    .ok_or(err_msg(format!(
+                        "did not get the hd_domain decryption parameter {}",
+                        &section.url
+                    )))?
+                    .split("|")
+                    .collect::<Vec<&str>>()
+                    .get(0)
+                    .ok_or(err_msg(format!(
+                        "did not get the hd_domain decryption parameter {}",
+                        &section.url
+                    )))?
+                    .clone();
+                for n in (1..(count + 1)).step_by(2) {
                     let url = RE_URL
                         .replace_all(&section.url, format!("/{}.html", n).as_str())
                         .to_string();
@@ -151,51 +172,48 @@ impl Fetcher for Hhmh {
                     match helper.result() {
                         http::Result::Ok(html_s) => {
                             let doc = html::parse_document(&html_s);
+                            // 解密当前页图片地址
                             let img_name_attr = doc
                                 .select(&html::parse_select("#iBodyQ img")?)
                                 .next()
-                                .ok_or(err_msg(format!("did not get cipher text, {}", &url)))?
+                                .ok_or(err_msg(format!(
+                                    "unable to get cipher-text to current image, {}",
+                                    &url
+                                )))?
                                 .value()
                                 .attr("name")
-                                .ok_or(err_msg(format!("did not get cipher text, {}", &url)))?;
-                            let hd_domain = doc
-                                .select(&html::parse_select("#hdDomain")?)
-                                .next()
                                 .ok_or(err_msg(format!(
-                                    "did not get the hdDomain decryption parameter {}",
-                                    &section.url
-                                )))?
-                                .value()
-                                .attr("value")
-                                .ok_or(err_msg(format!(
-                                    "did not get the hdDomain decryption parameter {}",
-                                    &section.url
-                                )))?
-                                .split("|")
-                                .collect::<Vec<&str>>()
-                                .get(0)
-                                .ok_or(err_msg(format!(
-                                    "did not get the hdDomain decryption parameter {}",
-                                    &section.url
-                                )))?
-                                .clone();
+                                    "unable to get cipher-text to current image, {}",
+                                    &url
+                                )))?;
                             let vars = format!(
                                 "var hostname='{}'; var imgNameAttr='{}';",
                                 &hostname, img_name_attr
                             );
                             let wrapper_code = format!("{}\n{}", &vars, &DECRYPT_BLOCK);
-                            // 托管给 JSRT 并获取结果
-                            let output = jsrt::read_output(&wrapper_code)?;
-                            let v: Value = serde_json::from_str(&output)?;
-                            let url = format!(
-                                "{}{}",
-                                &hd_domain,
-                                v["path"].as_str().ok_or(err_msg(format!(
-                                    "decryption failed, full wrapper code: {}",
-                                    &wrapper_code
+                            let cur_url = decryption(&wrapper_code, &hd_domain)?;
+                            section.add_page(Page::new((n - 1) as u32, &cur_url));
+                            // 解密下一页图片地址
+                            let img_name_attr = doc
+                                .select(&html::parse_select("#hdNextImg")?)
+                                .next()
+                                .ok_or(err_msg(format!(
+                                    "unable to get cipher-text to next image, {}",
+                                    &url
                                 )))?
+                                .value()
+                                .attr("value")
+                                .ok_or(err_msg(format!(
+                                    "unable to get cipher-text to next image, {}",
+                                    &url
+                                )))?;
+                            let vars = format!(
+                                "var hostname='{}'; var imgNameAttr='{}';",
+                                &hostname, img_name_attr
                             );
-                            section.add_page(Page::new((n - 1) as u32, &url));
+                            let wrapper_code = format!("{}\n{}", &vars, &DECRYPT_BLOCK);
+                            let nex_url = decryption(&wrapper_code, &hd_domain)?;
+                            section.add_page(Page::new((n) as u32, &nex_url));
                         }
                         http::Result::Err(e) => return Err(e),
                     }
@@ -205,6 +223,21 @@ impl Fetcher for Hhmh {
             http::Result::Err(e) => Err(e),
         }
     }
+}
+
+fn decryption(wrapper_code: &str, hd_domain: &str) -> Result<String> {
+    // 托管给 JSRT 并获取结果
+    let output = jsrt::read_output(wrapper_code)?;
+    let v: Value = serde_json::from_str(&output)?;
+    let url = format!(
+        "{}{}",
+        &hd_domain,
+        v["path"].as_str().ok_or(err_msg(format!(
+            "decryption failed, full wrapper code: {}",
+            &wrapper_code
+        )))?
+    );
+    Ok(url)
 }
 
 lazy_static! {
