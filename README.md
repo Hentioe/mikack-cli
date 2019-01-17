@@ -30,7 +30,7 @@ Smaller, faster and less dependent [manga](https://github.com/Hentioe/manga).
   - [ ] 基于 epub 转换的 azw3
   - [ ] 基于 epub 转换的 pdf
   - [ ] 基于参数或终端交互定义输出格式
-- [ ] 更多的资源来源支持
+- [x] 更多的资源来源支持
   - [ ] www.dm5.com (动漫屋)
   - [ ] www.cartoonmad.com (动漫狂)
   - [ ] manhua.fzdm.com (风之动漫)

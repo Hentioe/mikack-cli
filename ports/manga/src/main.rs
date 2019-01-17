@@ -92,9 +92,12 @@ fn main() -> Result<()> {
                     "[3/3] ------ [{}] ------",
                     format!("{}/{}", 0, select_list.len())
                 );
+                let mut failed_count = 0;
                 for (cur, s) in select_list.iter().enumerate() {
                     if let Some(sec) = detail.section_list.get(*s as usize) {
-                        if save(&sec.url, *fr, p.clone()).is_err() {}
+                        if save(&sec.url, *fr, p.clone()).is_err() {
+                            failed_count = failed_count + 1;
+                        }
                     }
                     println!(
                         "[3/3] ------ [{}] ------",
@@ -102,6 +105,11 @@ fn main() -> Result<()> {
                     );
                 }
                 println!("[3/3] {} Done!", Emoji("✨", ":-)"));
+                println!(
+                    "Result: {} saved; {} failed",
+                    (select_list.len() - failed_count),
+                    failed_count
+                );
                 passed = true;
                 break;
             }
