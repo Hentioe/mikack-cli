@@ -1,6 +1,6 @@
 [package]
 name = "libcore"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Hentioe_Cl <me@bluerain.io>"]
 edition = "2018"
 
