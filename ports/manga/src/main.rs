@@ -25,7 +25,7 @@ fn main() -> Result<()> {
     if matches.is_present("clean") {
         clean::delete_cache()?;
     } else {
-        let url = matches.value_of("url").unwrap();
+        let url = matches.value_of("url").ok_or(err_msg("Please give me a url!"))?;
         let section_matches: [(&Regex, &Fetcher, Platform); 2] = [
             (
                 &Regex::new(r#"https://manhua\.dmzj\.com/[^/]+/\d+\.shtml"#).unwrap(),
