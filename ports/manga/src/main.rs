@@ -22,10 +22,15 @@ lazy_static! {
 fn main() -> Result<()> {
     env_logger::init();
     let matches = cli::build_cli().get_matches();
+    let output_dir = matches
+        .value_of("output-directory")
+        .unwrap_or(libcore::DEFAULT_OUTPUT_DIR);
     if matches.is_present("clean") {
         clean::delete_cache()?;
     } else {
-        let url = matches.value_of("url").ok_or(err_msg("Please give me a url!"))?;
+        let url = matches
+            .value_of("url")
+            .ok_or(err_msg("Please give me a url!"))?;
         let section_matches: [(&Regex, &Fetcher, Platform); 2] = [
             (
                 &Regex::new(r#"https://manhua\.dmzj\.com/[^/]+/\d+\.shtml"#).unwrap(),
@@ -43,7 +48,7 @@ fn main() -> Result<()> {
             if re.find(&url).is_none() {
                 continue;
             } else {
-                save(&url, *fr, p.clone())?;
+                save(&url, *fr, p.clone(), output_dir)?;
                 passed = true;
                 break;
             }
@@ -98,7 +103,7 @@ fn main() -> Result<()> {
                     let mut failed_count = 0;
                     for (cur, s) in select_list.iter().enumerate() {
                         if let Some(sec) = detail.section_list.get(*s as usize) {
-                            if save(&sec.url, *fr, p.clone()).is_err() {
+                            if save(&sec.url, *fr, p.clone(), output_dir).is_err() {
                                 failed_count = failed_count + 1;
                             }
                         }
@@ -125,7 +130,7 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-fn save(url: &str, fetcher: &Fetcher, platform: Platform) -> Result<String> {
+fn save(url: &str, fetcher: &Fetcher, platform: Platform, output_dir: &str) -> Result<String> {
     let mut section = Section::new(UNKNOWN_NAME, url);
 
     println!(
@@ -136,7 +141,7 @@ fn save(url: &str, fetcher: &Fetcher, platform: Platform) -> Result<String> {
     fetcher.fetch_pages(&mut section)?;
     println!("[1/2] {} Done!", Emoji("✨", ":-)"));
     println!("{} {}Saving epub...", style("[2/2]").bold().dim(), TRUCK);
-    let path = epub::Epub::new(platform, section).save()?;
+    let path = epub::Epub::new(platform, section).save(output_dir)?;
     println!("[2/2] {} Done!", Emoji("✨", ":-)"));
     println!("Succeed: {}", &path);
     Ok(path)

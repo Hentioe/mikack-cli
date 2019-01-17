@@ -9,6 +9,7 @@ pub mod storage;
 
 pub const BASE_RES_DIR: &'static str = "manga_res";
 pub const CACHE_DIR_NAME: &'static str = ".cache";
+pub const DEFAULT_OUTPUT_DIR: &'static str = "manga_res/outputs";
 
 use std::path::PathBuf;
 

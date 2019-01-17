@@ -10,6 +10,15 @@ pub fn build_cli() -> App<'static, 'static> {
         .arg(
             Arg::with_name("url")
                 .help("Online manga address")
+                .takes_value(true)
+                .required(false),
+        )
+        .arg(
+            Arg::with_name("output-directory")
+                .long("output")
+                .short("O")
+                .help("Specify output directory")
+                .takes_value(true)
                 .required(false),
         )
         .subcommand(
