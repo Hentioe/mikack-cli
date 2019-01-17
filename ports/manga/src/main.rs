@@ -17,6 +17,14 @@ static TRUCK: Emoji = Emoji("🚚  ", "");
 lazy_static! {
     static ref DMZJ: Platform = Platform::new("动漫之家", "https://manhua.dmzj.com");
     static ref HHMH: Platform = Platform::new("汗汗漫画", "http://www.hhmmoo.com");
+    static ref RE_DETAIL_DMZJ: Regex =
+        Regex::new(r#"https?://manhua\.dmzj\.com/[^/]+/\d+\.shtml"#).unwrap();
+    static ref RE_DETAIL_HHMH: Regex =
+        Regex::new(r#"https?://www\.hhmmoo\.com/page\d+/\d+\.html"#).unwrap();
+    static ref RE_SECTION_DMZJ: Regex =
+        Regex::new(r#"^https?://manhua\.dmzj\.com/[^/]+/$"#).unwrap();
+    static ref RE_SECTION_HHMH: Regex =
+        Regex::new(r#"^https?://www\.hhmmoo\.com/manhua\d+\.html$"#).unwrap();
 }
 
 fn main() -> Result<()> {
@@ -27,105 +35,142 @@ fn main() -> Result<()> {
         .unwrap_or(libcore::DEFAULT_OUTPUT_DIR);
     if matches.is_present("clean") {
         clean::delete_cache()?;
+    } else if matches.value_of("url").is_some() {
+        let url = matches.value_of("url").unwrap();
+        analysis_url(url, output_dir)?;
     } else {
-        let url = matches
-            .value_of("url")
-            .ok_or(err_msg("Please give me a url!"))?;
-        let section_matches: [(&Regex, &Fetcher, Platform); 2] = [
+        println!(
+            "Welcome to manga ({})! There are huge manga resources available for direct save.",
+            &VERSION
+        );
+        println!("Yes, any ideas or problems can be discussed at https://github.com/Hentioe/manga-rs/issues.");
+        println!("They are our source of resources:");
+        let source_list = gen_sources();
+        for (i, (p, _f)) in source_list.iter().enumerate() {
+            println!("{}. {}", i + 1, p.name)
+        }
+        println!("==> Please choose a platform (e.g: 1, want to support your favorite platform? Go to the issue and tell me!)");
+        print!("==> ");
+        std::io::stdout().flush()?;
+        let mut input = String::new();
+        std::io::stdin().read_line(&mut input)?;
+        let n = input.trim().parse::<u32>()?;
+        let (_, fetcher): &(Platform, Box<&Fetcher>) = source_list
+            .get((n - 1) as usize)
+            .ok_or(err_msg("no platform selected"))?;
+        let detail_list = fetcher.index(0)?;
+        for (i, detail) in detail_list.iter().enumerate() {
+            println!("{}. {}", i + 1, &detail.name);
+        }
+        println!("==> Please choose a detail (e.g: 1)");
+        print!("==> ");
+        std::io::stdout().flush()?;
+        let mut input = String::new();
+        std::io::stdin().read_line(&mut input)?;
+        let n = input.trim().parse::<u32>()?;
+        let detail = detail_list
+            .get((n - 1) as usize)
+            .ok_or(err_msg("no detail selected"))?;
+        analysis_url(&detail.url, output_dir)?;
+    }
+    Ok(())
+}
+
+fn analysis_url(url: &str, output_dir: &str) -> Result<()> {
+    let section_matches: [(&Regex, &Fetcher, Platform); 2] = [
+        (
+            &RE_DETAIL_DMZJ,
+            &upstream::Dmzj {} as &Fetcher,
+            DMZJ.clone(),
+        ),
+        (
+            &RE_DETAIL_HHMH,
+            &upstream::Hhmh {} as &Fetcher,
+            HHMH.clone(),
+        ),
+    ];
+    let mut passed = false;
+    for (re, fr, p) in section_matches.iter() {
+        if re.find(&url).is_none() {
+            continue;
+        } else {
+            save(&url, *fr, p.clone(), output_dir)?;
+            passed = true;
+            break;
+        }
+    }
+    if !passed {
+        // 作为 Detail url 继续检测
+        let detail_matches: [(&Regex, &Fetcher, Platform); 2] = [
             (
-                &Regex::new(r#"https://manhua\.dmzj\.com/[^/]+/\d+\.shtml"#).unwrap(),
+                &RE_SECTION_DMZJ,
                 &upstream::Dmzj {} as &Fetcher,
                 DMZJ.clone(),
             ),
             (
-                &Regex::new(r#"http://www\.hhmmoo\.com/page\d+/\d+\.html"#).unwrap(),
+                &RE_SECTION_HHMH,
                 &upstream::Hhmh {} as &Fetcher,
                 HHMH.clone(),
             ),
         ];
-        let mut passed = false;
-        for (re, fr, p) in section_matches.iter() {
+
+        for (re, fr, p) in detail_matches.iter() {
             if re.find(&url).is_none() {
                 continue;
             } else {
-                save(&url, *fr, p.clone(), output_dir)?;
+                let mut detail = Detail::new(UNKNOWN_NAME, &url);
+
+                println!(
+                    "{} {}Searching list...",
+                    style("[1/3]").bold().dim(),
+                    LOOKING_GLASS
+                );
+                fr.fetch_sections(&mut detail)?;
+                println!("[1/3] {} Done!", Emoji("✨", ":-)"));
+                println!("{} {}Selecting list...", style("[3/2]").bold().dim(), TRUCK);
+                for (i, sec) in detail.section_list.iter().enumerate() {
+                    println!("{}", format!("{}. {}", (i + 1), &sec.name));
+                }
+                print!("==> Select to save (eg: 1,2,3, 4-6, ^5)\n==> ");
+                let mut input = String::new();
+                std::io::stdout().flush()?;
+                std::io::stdin().read_line(&mut input)?;
+                let select_list = parse_section_list(&input.trim());
+                println!("[3/2] {} Done!", Emoji("✨", ":-)"));
+                println!(
+                    "{} {}Queue processing...",
+                    style("[3/3]").bold().dim(),
+                    TRUCK
+                );
+                println!(
+                    "[3/3] ------ [{}] ------",
+                    format!("{}/{}", 0, select_list.len())
+                );
+                let mut failed_count = 0;
+                for (cur, s) in select_list.iter().enumerate() {
+                    if let Some(sec) = detail.section_list.get(*s as usize) {
+                        if save(&sec.url, *fr, p.clone(), output_dir).is_err() {
+                            failed_count = failed_count + 1;
+                        }
+                    }
+                    println!(
+                        "[3/3] ------ [{}] ------",
+                        format!("{}/{}", cur + 1, select_list.len())
+                    );
+                }
+                println!("[3/3] {} Done!", Emoji("✨", ":-)"));
+                println!(
+                    "Result: {} saved; {} failed",
+                    (select_list.len() - failed_count),
+                    failed_count
+                );
                 passed = true;
                 break;
             }
         }
-        if !passed {
-            // 作为 Detail url 继续检测
-            let detail_matches: [(&Regex, &Fetcher, Platform); 2] = [
-                (
-                    &Regex::new(r#"^https://manhua\.dmzj\.com/[^/]+/$"#).unwrap(),
-                    &upstream::Dmzj {} as &Fetcher,
-                    DMZJ.clone(),
-                ),
-                (
-                    &Regex::new(r#"^http://www\.hhmmoo\.com/manhua\d+\.html$"#).unwrap(),
-                    &upstream::Hhmh {} as &Fetcher,
-                    HHMH.clone(),
-                ),
-            ];
-
-            for (re, fr, p) in detail_matches.iter() {
-                if re.find(&url).is_none() {
-                    continue;
-                } else {
-                    let mut detail = Detail::new(UNKNOWN_NAME, &url);
-
-                    println!(
-                        "{} {}Searching list...",
-                        style("[1/3]").bold().dim(),
-                        LOOKING_GLASS
-                    );
-                    fr.fetch_sections(&mut detail)?;
-                    println!("[1/3] {} Done!", Emoji("✨", ":-)"));
-                    println!("{} {}Selecting list...", style("[3/2]").bold().dim(), TRUCK);
-                    for (i, sec) in detail.section_list.iter().enumerate() {
-                        println!("{}", format!("{}. {}", i, &sec.name));
-                    }
-                    print!("==> Select to save (eg: 1,2,3, 4-6, ^5)\n==> ");
-                    let mut input = String::new();
-                    std::io::stdout().flush()?;
-                    std::io::stdin().read_line(&mut input)?;
-                    let select_list = parse_section_list(&input.trim());
-                    println!("[3/2] {} Done!", Emoji("✨", ":-)"));
-                    println!(
-                        "{} {}Queue processing...",
-                        style("[3/3]").bold().dim(),
-                        TRUCK
-                    );
-                    println!(
-                        "[3/3] ------ [{}] ------",
-                        format!("{}/{}", 0, select_list.len())
-                    );
-                    let mut failed_count = 0;
-                    for (cur, s) in select_list.iter().enumerate() {
-                        if let Some(sec) = detail.section_list.get(*s as usize) {
-                            if save(&sec.url, *fr, p.clone(), output_dir).is_err() {
-                                failed_count = failed_count + 1;
-                            }
-                        }
-                        println!(
-                            "[3/3] ------ [{}] ------",
-                            format!("{}/{}", cur + 1, select_list.len())
-                        );
-                    }
-                    println!("[3/3] {} Done!", Emoji("✨", ":-)"));
-                    println!(
-                        "Result: {} saved; {} failed",
-                        (select_list.len() - failed_count),
-                        failed_count
-                    );
-                    passed = true;
-                    break;
-                }
-            }
-        }
-        if !passed {
-            return Err(err_msg("invalid or unsupported url"));
-        }
+    }
+    if !passed {
+        return Err(err_msg("invalid or unsupported url"));
     }
     Ok(())
 }
@@ -186,8 +231,15 @@ fn parse_section_list(input_s: &str) -> Vec<i32> {
     }
     ones.iter()
         .filter(|i| !excludes.contains(i))
-        .map(|i| *i)
+        .map(|i| *i - 1)
         .collect()
+}
+
+fn gen_sources() -> Vec<(Platform, Box<&'static Fetcher>)> {
+    vec![
+        (DMZJ.clone(), Box::new(&upstream::Dmzj {} as &Fetcher)),
+        (HHMH.clone(), Box::new(&upstream::Hhmh {} as &Fetcher)),
+    ]
 }
 
 #[cfg(test)]
@@ -198,7 +250,7 @@ mod tests {
     fn test_parse_section_list() {
         let input = "1, 2, 3, 4-8， ^5, ^2";
         let result = parse_section_list(&input);
-        for i in [1, 3, 4, 6, 7, 8].iter() {
+        for i in [0, 2, 3, 5, 6, 7].iter() {
             assert!(result.contains(i));
         }
     }
