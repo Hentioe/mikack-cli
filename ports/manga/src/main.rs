@@ -8,6 +8,7 @@ use libcore::{
 use regex::Regex;
 use std::io::prelude::*;
 
+mod clean;
 mod cli;
 
 static LOOKING_GLASS: Emoji = Emoji("🔍  ", "");
@@ -21,102 +22,105 @@ lazy_static! {
 fn main() -> Result<()> {
     env_logger::init();
     let matches = cli::build_cli().get_matches();
-    let url = matches.value_of("url").unwrap();
-
-    let section_matches: [(&Regex, &Fetcher, Platform); 2] = [
-        (
-            &Regex::new(r#"https://manhua\.dmzj\.com/[^/]+/\d+\.shtml"#).unwrap(),
-            &upstream::Dmzj {} as &Fetcher,
-            DMZJ.clone(),
-        ),
-        (
-            &Regex::new(r#"http://www\.hhmmoo\.com/page\d+/\d+\.html"#).unwrap(),
-            &upstream::Hhmh {} as &Fetcher,
-            HHMH.clone(),
-        ),
-    ];
-    let mut passed = false;
-    for (re, fr, p) in section_matches.iter() {
-        if re.find(&url).is_none() {
-            continue;
-        } else {
-            save(&url, *fr, p.clone())?;
-            passed = true;
-            break;
-        }
-    }
-    if !passed {
-        // 作为 Detail url 继续检测
-        let detail_matches: [(&Regex, &Fetcher, Platform); 2] = [
+    if matches.is_present("clean") {
+        clean::delete_cache()?;
+    } else {
+        let url = matches.value_of("url").unwrap();
+        let section_matches: [(&Regex, &Fetcher, Platform); 2] = [
             (
-                &Regex::new(r#"^https://manhua\.dmzj\.com/[^/]+/$"#).unwrap(),
+                &Regex::new(r#"https://manhua\.dmzj\.com/[^/]+/\d+\.shtml"#).unwrap(),
                 &upstream::Dmzj {} as &Fetcher,
                 DMZJ.clone(),
             ),
             (
-                &Regex::new(r#"^http://www\.hhmmoo\.com/manhua\d+\.html$"#).unwrap(),
+                &Regex::new(r#"http://www\.hhmmoo\.com/page\d+/\d+\.html"#).unwrap(),
                 &upstream::Hhmh {} as &Fetcher,
                 HHMH.clone(),
             ),
         ];
-
-        for (re, fr, p) in detail_matches.iter() {
+        let mut passed = false;
+        for (re, fr, p) in section_matches.iter() {
             if re.find(&url).is_none() {
                 continue;
             } else {
-                let mut detail = Detail::new(UNKNOWN_NAME, &url);
-
-                println!(
-                    "{} {}Searching list...",
-                    style("[1/3]").bold().dim(),
-                    LOOKING_GLASS
-                );
-                fr.fetch_sections(&mut detail)?;
-                println!("[1/3] {} Done!", Emoji("✨", ":-)"));
-                println!("{} {}Selecting list...", style("[3/2]").bold().dim(), TRUCK);
-                for (i, sec) in detail.section_list.iter().enumerate() {
-                    println!("{}", format!("{}. {}", i, &sec.name));
-                }
-                print!("==> Select to save (eg: 1,2,3, 4-6, ^5)\n==> ");
-                let mut input = String::new();
-                std::io::stdout().flush()?;
-                std::io::stdin().read_line(&mut input)?;
-                let select_list = parse_section_list(&input.trim());
-                println!("[3/2] {} Done!", Emoji("✨", ":-)"));
-                println!(
-                    "{} {}Queue processing...",
-                    style("[3/3]").bold().dim(),
-                    TRUCK
-                );
-                println!(
-                    "[3/3] ------ [{}] ------",
-                    format!("{}/{}", 0, select_list.len())
-                );
-                let mut failed_count = 0;
-                for (cur, s) in select_list.iter().enumerate() {
-                    if let Some(sec) = detail.section_list.get(*s as usize) {
-                        if save(&sec.url, *fr, p.clone()).is_err() {
-                            failed_count = failed_count + 1;
-                        }
-                    }
-                    println!(
-                        "[3/3] ------ [{}] ------",
-                        format!("{}/{}", cur + 1, select_list.len())
-                    );
-                }
-                println!("[3/3] {} Done!", Emoji("✨", ":-)"));
-                println!(
-                    "Result: {} saved; {} failed",
-                    (select_list.len() - failed_count),
-                    failed_count
-                );
+                save(&url, *fr, p.clone())?;
                 passed = true;
                 break;
             }
         }
-    }
-    if !passed {
-        return Err(err_msg("invalid or unsupported url"));
+        if !passed {
+            // 作为 Detail url 继续检测
+            let detail_matches: [(&Regex, &Fetcher, Platform); 2] = [
+                (
+                    &Regex::new(r#"^https://manhua\.dmzj\.com/[^/]+/$"#).unwrap(),
+                    &upstream::Dmzj {} as &Fetcher,
+                    DMZJ.clone(),
+                ),
+                (
+                    &Regex::new(r#"^http://www\.hhmmoo\.com/manhua\d+\.html$"#).unwrap(),
+                    &upstream::Hhmh {} as &Fetcher,
+                    HHMH.clone(),
+                ),
+            ];
+
+            for (re, fr, p) in detail_matches.iter() {
+                if re.find(&url).is_none() {
+                    continue;
+                } else {
+                    let mut detail = Detail::new(UNKNOWN_NAME, &url);
+
+                    println!(
+                        "{} {}Searching list...",
+                        style("[1/3]").bold().dim(),
+                        LOOKING_GLASS
+                    );
+                    fr.fetch_sections(&mut detail)?;
+                    println!("[1/3] {} Done!", Emoji("✨", ":-)"));
+                    println!("{} {}Selecting list...", style("[3/2]").bold().dim(), TRUCK);
+                    for (i, sec) in detail.section_list.iter().enumerate() {
+                        println!("{}", format!("{}. {}", i, &sec.name));
+                    }
+                    print!("==> Select to save (eg: 1,2,3, 4-6, ^5)\n==> ");
+                    let mut input = String::new();
+                    std::io::stdout().flush()?;
+                    std::io::stdin().read_line(&mut input)?;
+                    let select_list = parse_section_list(&input.trim());
+                    println!("[3/2] {} Done!", Emoji("✨", ":-)"));
+                    println!(
+                        "{} {}Queue processing...",
+                        style("[3/3]").bold().dim(),
+                        TRUCK
+                    );
+                    println!(
+                        "[3/3] ------ [{}] ------",
+                        format!("{}/{}", 0, select_list.len())
+                    );
+                    let mut failed_count = 0;
+                    for (cur, s) in select_list.iter().enumerate() {
+                        if let Some(sec) = detail.section_list.get(*s as usize) {
+                            if save(&sec.url, *fr, p.clone()).is_err() {
+                                failed_count = failed_count + 1;
+                            }
+                        }
+                        println!(
+                            "[3/3] ------ [{}] ------",
+                            format!("{}/{}", cur + 1, select_list.len())
+                        );
+                    }
+                    println!("[3/3] {} Done!", Emoji("✨", ":-)"));
+                    println!(
+                        "Result: {} saved; {} failed",
+                        (select_list.len() - failed_count),
+                        failed_count
+                    );
+                    passed = true;
+                    break;
+                }
+            }
+        }
+        if !passed {
+            return Err(err_msg("invalid or unsupported url"));
+        }
     }
     Ok(())
 }

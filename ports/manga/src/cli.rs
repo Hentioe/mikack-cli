@@ -10,7 +10,12 @@ pub fn build_cli() -> App<'static, 'static> {
         .arg(
             Arg::with_name("url")
                 .help("Online manga address")
-                .required(true)
-                .index(1),
+                .required(false),
+        )
+        .subcommand(
+            App::new("clean")
+                .version(VERSION)
+                .about("Empty the cache (the structure directory of epub)")
+                .author("Hentioe Cl (绅士喵)"),
         )
 }
