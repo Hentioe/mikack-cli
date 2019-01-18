@@ -133,7 +133,7 @@ pub fn from_section(section: &mut Section) -> FaultTolerance<Progress> {
     let progress = Progress::new(section.page_list.len() as u64);
     let mut all_succeed = Ok(());
     for page in &mut section.page_list {
-        let exist_p: Vec<&Page> = exists_list.iter().filter(|p| p.url == page.url).collect();
+        let exist_p: Vec<&Page> = exists_list.iter().filter(|p| p.url == page.url && p.p == page.p).collect();
         if exist_p.len() > 0
             && PathBuf::from(format!("{}/{}", &dir, exist_p[0].file_name())).exists()
         {
