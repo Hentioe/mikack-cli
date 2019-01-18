@@ -30,12 +30,18 @@ pub struct Section {
 }
 
 // 漫画单页（一张图）
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Page {
     pub p: u32,
     pub url: String,
     pub mime: String,
     pub extension: String,
+}
+
+impl Page {
+    pub fn file_name(&self) -> String {
+        format!("{}.{}", self.p, self.extension)
+    }
 }
 
 pub const UNKNOWN_NAME: &'static str = "[UNNAMED]";

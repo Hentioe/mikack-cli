@@ -1,9 +1,12 @@
 use crate::errors::{Result as FaultTolerance, *};
 use crate::{
     fetch::{http::*, *},
+    get_origin_path,
     progress::*,
 };
 use reqwest::header::{HeaderValue, REFERER};
+use serde_derive::{Deserialize, Serialize};
+use serde_json::Value;
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::PathBuf;
@@ -62,23 +65,107 @@ fn get_extension_from_mime(mime_s: &str) -> &str {
     }
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+struct SectionTrace {
+    name: String,
+    list: Vec<Page>,
+}
+
+impl SectionTrace {
+    fn new(name: &str) -> Self {
+        Self {
+            name: name.to_owned(),
+            list: vec![],
+        }
+    }
+
+    fn add_page(&mut self, page: Page) {
+        self.list.push(page);
+    }
+}
+
 pub fn from_section(section: &mut Section) -> FaultTolerance<Progress> {
     if !section.has_page() {
         return Err(err_msg("does not contain a section list"));
     }
-    let dir = format!("manga_res/{}/origins", &section.name);
+    let dir = get_origin_path(&section.name)?;
+    let trace_path = format!("{}/{}", &dir, "trace.json");
     std::fs::create_dir_all(&dir)?;
+    let mut trace = SectionTrace::new(&section.name);
+    // 如果已存在 trace.json 提取已保存的页信息（图片）
+    let mut exists_list: Vec<Page> = vec![];
+    if PathBuf::from(&trace_path).exists() {
+        let mut json_s = String::new();
+        let mut trace_f = File::open(&trace_path)?;
+        trace_f.read_to_string(&mut json_s)?;
+        match serde_json::from_str::<Value>(&json_s) {
+            Ok(trace_v) => {
+                for page_v in trace_v["list"]
+                    .as_array()
+                    .ok_or(err_msg("incorrect trace.json, no 'list' field found"))?
+                {
+                    exists_list.push(Page {
+                        p: page_v["p"]
+                            .as_u64()
+                            .ok_or(err_msg("incorrect trace.json"))?
+                            as u32,
+                        url: page_v["url"]
+                            .as_str()
+                            .ok_or(err_msg("incorrect trace.json"))?
+                            .to_owned(),
+                        mime: page_v["mime"]
+                            .as_str()
+                            .ok_or(err_msg("incorrect trace.json"))?
+                            .to_owned(),
+                        extension: page_v["extension"]
+                            .as_str()
+                            .ok_or(err_msg("incorrect trace.json"))?
+                            .to_owned(),
+                    });
+                }
+            }
+            Err(_e) => {
+                std::fs::remove_file(&trace_path).unwrap_or(());
+            }
+        }
+    }
     // 开始循环下载
     let progress = Progress::new(section.page_list.len() as u64);
+    let mut all_succeed = Ok(());
     for page in &mut section.page_list {
-        let mut helper = SendHelper::with_header(REFERER, HeaderValue::from_str(&section.url)?);
-        helper.send_get(&page.url)?;
-        let of = from_helper(&mut helper, &dir, &format!("{}", page.p))?;
-        page.set_mime(&of.mime);
-        page.set_extension((&of).path.extension().unwrap().to_str().unwrap());
+        let exist_p: Vec<&Page> = exists_list.iter().filter(|p| p.url == page.url).collect();
+        if exist_p.len() > 0
+            && PathBuf::from(format!("{}/{}", &dir, exist_p[0].file_name())).exists()
+        {
+            let exist = exist_p[0].clone();
+            *page = exist.clone();
+            trace.add_page(exist.clone());
+        } else {
+            let mut helper = SendHelper::with_header(REFERER, HeaderValue::from_str(&section.url)?);
+            helper.send_get(&page.url)?;
+            match from_helper(&mut helper, &dir, &format!("{}", page.p)) {
+                Ok(of) => {
+                    page.set_mime(&of.mime);
+                    page.set_extension((&of).path.extension().unwrap().to_str().unwrap());
+                    trace.add_page(page.clone());
+                }
+                Err(e) => {
+                    all_succeed = Err(e);
+                    break;
+                }
+            }
+        }
         progress.go();
     }
-    Ok(progress)
+    // 写入 trace.json
+    {
+        let mut trace_f = File::create(&trace_path)?;
+        trace_f.write_all(serde_json::to_string(&trace)?.as_bytes())?;
+    }
+    match all_succeed {
+        Ok(_) => Ok(progress),
+        Err(e) => Err(e),
+    }
 }
 
 #[cfg(test)]

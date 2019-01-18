@@ -45,4 +45,4 @@ Smaller, faster and less dependent [manga](https://github.com/Hentioe/manga).
 - [x] 其它
   - [x] 清理缓存资源
   - [x] 指定输出目录
-  - [ ] 原始图片复用（避免重复下载）
+  - [x] 原始图片复用（避免重复下载）
