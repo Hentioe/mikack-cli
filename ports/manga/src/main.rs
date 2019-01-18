@@ -44,34 +44,49 @@ fn main() -> Result<()> {
             &VERSION
         );
         println!("Yes, any ideas or problems can be discussed at https://github.com/Hentioe/manga-rs/issues.");
-        println!("They are our source of resources:");
-        let source_list = gen_sources();
-        for (i, (p, _f)) in source_list.iter().enumerate() {
-            println!("{}. {}", i + 1, p.name)
-        }
-        println!("==> Please choose a platform (e.g: 1, want to support your favorite platform? Go to the issue and tell me!)");
-        print!("==> ");
-        std::io::stdout().flush()?;
-        let mut input = String::new();
-        std::io::stdin().read_line(&mut input)?;
-        let n = input.trim().parse::<u32>()?;
-        let (_, fetcher): &(Platform, Box<&Fetcher>) = source_list
-            .get((n - 1) as usize)
-            .ok_or(err_msg("no platform selected"))?;
-        let detail_list = fetcher.index(0)?;
+        from_source_list(output_dir)?;
+    }
+    Ok(())
+}
+
+fn from_source_list(output_dir: &str) -> Result<()> {
+    println!("They are our source of resources:");
+    let source_list = gen_sources();
+    for (i, (p, _f)) in source_list.iter().enumerate() {
+        println!("{}. {}", i + 1, p.name)
+    }
+    println!("==> Please choose a platform (e.g: 1, want to support your favorite platform? Go to the issue and tell me!)");
+    print!("==> ");
+    std::io::stdout().flush()?;
+    let mut input = String::new();
+    std::io::stdin().read_line(&mut input)?;
+    let n = input.trim().parse::<u32>()?;
+    let (_, fetcher): &(Platform, Box<&Fetcher>) = source_list
+        .get((n - 1) as usize)
+        .ok_or(err_msg("no platform selected"))?;
+    let mut more = 0;
+    loop {
+        let detail_list = fetcher.index(more)?;
         for (i, detail) in detail_list.iter().enumerate() {
             println!("{}. {}", i + 1, &detail.name);
         }
-        println!("==> Please choose a detail (e.g: 1)");
+        println!("==> Please choose a detail (e.g: 1, Enter to go to the next list)");
         print!("==> ");
         std::io::stdout().flush()?;
         let mut input = String::new();
         std::io::stdin().read_line(&mut input)?;
-        let n = input.trim().parse::<u32>()?;
-        let detail = detail_list
-            .get((n - 1) as usize)
-            .ok_or(err_msg("no detail selected"))?;
-        analysis_url(&detail.url, output_dir)?;
+        input = input.trim().to_string();
+        if input == "" {
+            more = more + 1;
+            continue;
+        } else {
+            let n = input.parse::<u32>()?;
+            let detail = detail_list
+                .get((n - 1) as usize)
+                .ok_or(err_msg("no detail selected"))?;
+            analysis_url(&detail.url, output_dir)?;
+            break;
+        }
     }
     Ok(())
 }

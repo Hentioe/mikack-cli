@@ -23,7 +23,7 @@ Smaller, faster and less dependent [manga](https://github.com/Hentioe/manga).
 
 - [x] 基于交互式终端模式
   - [x] 选择平台 -> 选择漫画 -> 保存
-  - [ ] 漫画索引支持查看更多
+  - [x] 漫画索引支持查看更多
   - [x] 漫画保存列表支持多选
 - [ ] 更多的导出格式支持
   - [ ] 基于 epub 转换的 mobi
