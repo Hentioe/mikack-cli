@@ -5,11 +5,11 @@ use libcore::{
     export::{prelude::*, *},
     fetch::{prelude::*, *},
 };
+use manga::cli;
 use regex::Regex;
 use std::io::prelude::*;
 
 mod clean;
-mod cli;
 
 static LOOKING_GLASS: Emoji = Emoji("🔍  ", "");
 static TRUCK: Emoji = Emoji("🚚  ", "");
@@ -41,9 +41,9 @@ fn main() -> Result<()> {
     } else {
         println!(
             "Welcome to manga ({})! There are huge manga resources available for direct save.",
-            &VERSION
+            &manga::VERSION
         );
-        println!("Yes, any ideas or problems can be discussed at https://github.com/Hentioe/manga-rs/issues.");
+        println!("Also, any ideas or problems can be discussed at https://github.com/Hentioe/manga-rs/issues.");
         from_source_list(output_dir)?;
     }
     Ok(())

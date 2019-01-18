@@ -1,6 +1,5 @@
+use super::VERSION;
 use clap::{App, Arg};
-
-pub const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
 pub fn build_cli() -> App<'static, 'static> {
     App::new("manga")
