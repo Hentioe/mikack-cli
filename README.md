@@ -25,11 +25,11 @@ Smaller, faster and less dependent [manga](https://github.com/Hentioe/manga).
   - [x] 选择平台 -> 选择漫画 -> 保存
   - [x] 漫画索引支持查看更多
   - [x] 漫画保存列表支持多选
-- [ ] 更多的导出格式支持
+- [x] 更多的导出格式支持
   - [ ] 基于 epub 转换的 mobi
   - [ ] 基于 epub 转换的 azw3
-  - [ ] 基于 epub 转换的 pdf
-  - [ ] 基于参数或终端交互定义输出格式
+  - [x] 基于 epub 转换的 pdf
+  - [x] 基于参数或终端交互定义输出格式
 - [x] 更多的资源来源支持
   - [ ] www.dm5.com (动漫屋)
   - [ ] www.cartoonmad.com (动漫狂)

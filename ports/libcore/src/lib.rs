@@ -14,6 +14,8 @@ pub const DEFAULT_OUTPUT_DIR: &'static str = "manga_res/outputs";
 
 use std::path::PathBuf;
 
+pub const VERSION: &'static str = env!("CARGO_PKG_VERSION");
+
 pub fn get_cache_path(section_name: &str) -> errors::Result<String> {
     let mut path = PathBuf::from(BASE_RES_DIR);
     path.push(section_name);

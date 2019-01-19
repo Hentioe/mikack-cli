@@ -22,7 +22,7 @@ pub struct Detail {
 }
 
 // 漫画章节（例：第一话）
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Section {
     pub name: String,
     pub url: String,

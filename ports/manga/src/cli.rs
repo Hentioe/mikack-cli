@@ -22,6 +22,15 @@ pub fn build_cli() -> App<'static, 'static> {
                 .takes_value(true)
                 .required(false),
         )
+        .arg(
+            Arg::with_name("output-formats")
+                .long("format")
+                .short("f")
+                .help("Saved format (eg: mobi,azw3,pdf)")
+                .takes_value(true)
+                .required(true)
+                .default_value("epub"),
+        )
         .subcommand(
             App::new("clean")
                 .version(VERSION)

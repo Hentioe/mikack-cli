@@ -30,6 +30,11 @@ lazy_static! {
 fn main() -> Result<()> {
     env_logger::init();
     let matches = cli::build_cli().get_matches();
+    let formats = parse_formats(
+        matches
+            .value_of("output-formats")
+            .ok_or(err_msg("missing 'formats' parameter"))?,
+    )?;
     let output_dir = matches
         .value_of("output-directory")
         .unwrap_or(libcore::DEFAULT_OUTPUT_DIR);
@@ -37,19 +42,19 @@ fn main() -> Result<()> {
         clean::delete_cache()?;
     } else if matches.value_of("url").is_some() {
         let url = matches.value_of("url").unwrap();
-        analysis_url(url, output_dir)?;
+        analysis_url(url, output_dir, formats)?;
     } else {
         println!(
             "Welcome to manga ({})! There are huge manga resources available for direct save.",
             &manga::VERSION
         );
         println!("Also, any ideas or problems can be discussed at https://github.com/Hentioe/manga-rs/issues.");
-        from_source_list(output_dir)?;
+        from_source_list(output_dir, formats)?;
     }
     Ok(())
 }
 
-fn from_source_list(output_dir: &str) -> Result<()> {
+fn from_source_list(output_dir: &str, formats: Vec<OutputFormat>) -> Result<()> {
     println!("They are our source of resources:");
     let source_list = gen_sources();
     for (i, (p, _f)) in source_list.iter().enumerate() {
@@ -84,14 +89,14 @@ fn from_source_list(output_dir: &str) -> Result<()> {
             let detail = detail_list
                 .get((n - 1) as usize)
                 .ok_or(err_msg("no detail selected"))?;
-            analysis_url(&detail.url, output_dir)?;
+            analysis_url(&detail.url, output_dir, formats)?;
             break;
         }
     }
     Ok(())
 }
 
-fn analysis_url(url: &str, output_dir: &str) -> Result<()> {
+fn analysis_url(url: &str, output_dir: &str, formats: Vec<OutputFormat>) -> Result<()> {
     let section_matches: [(&Regex, &Fetcher, Platform); 2] = [
         (
             &RE_DETAIL_DMZJ,
@@ -109,7 +114,7 @@ fn analysis_url(url: &str, output_dir: &str) -> Result<()> {
         if re.find(&url).is_none() {
             continue;
         } else {
-            save(&url, *fr, p.clone(), output_dir)?;
+            save(&url, *fr, p, output_dir, &formats)?;
             passed = true;
             break;
         }
@@ -164,8 +169,12 @@ fn analysis_url(url: &str, output_dir: &str) -> Result<()> {
                 let mut failed_count = 0;
                 for (cur, s) in select_list.iter().enumerate() {
                     if let Some(sec) = detail.section_list.get(*s as usize) {
-                        if save(&sec.url, *fr, p.clone(), output_dir).is_err() {
-                            failed_count = failed_count + 1;
+                        match save(&sec.url, *fr, p, output_dir, &formats) {
+                            Ok(_) => {}
+                            Err(e) => {
+                                println!("{:?}", e);
+                                failed_count = failed_count + 1;
+                            }
                         }
                     }
                     println!(
@@ -175,7 +184,7 @@ fn analysis_url(url: &str, output_dir: &str) -> Result<()> {
                 }
                 println!("[3/3] {} Done!", Emoji("✨", ":-)"));
                 println!(
-                    "Result: {} saved; {} failed",
+                    "Result: {} completed; {} failed",
                     (select_list.len() - failed_count),
                     failed_count
                 );
@@ -190,7 +199,13 @@ fn analysis_url(url: &str, output_dir: &str) -> Result<()> {
     Ok(())
 }
 
-fn save(url: &str, fetcher: &Fetcher, platform: Platform, output_dir: &str) -> Result<String> {
+fn save(
+    url: &str,
+    fetcher: &Fetcher,
+    platform: &Platform,
+    output_dir: &str,
+    formats: &Vec<OutputFormat>,
+) -> Result<()> {
     let mut section = Section::new(UNKNOWN_NAME, url);
 
     println!(
@@ -200,11 +215,29 @@ fn save(url: &str, fetcher: &Fetcher, platform: Platform, output_dir: &str) -> R
     );
     fetcher.fetch_pages(&mut section)?;
     println!("[1/2] {} Done!", Emoji("✨", ":-)"));
-    println!("{} {}Saving epub...", style("[2/2]").bold().dim(), TRUCK);
-    let path = epub::Epub::new(platform, section).save(output_dir)?;
+    let mut succeed_list: Vec<String> = vec![];
+    for f in formats {
+        println!(
+            "{} {}Saving {}...",
+            style("[2/2]").bold().dim(),
+            TRUCK,
+            f.to_string()
+        );
+        let path = match f {
+            OutputFormat::Epub => {
+                epub::Epub::new(platform.clone(), section.clone()).save(output_dir)?
+            }
+            OutputFormat::Pdf => {
+                pdf::Pdf::new(platform.clone(), section.clone()).save(output_dir)?
+            }
+        };
+        succeed_list.push(format!("Succeed: {}", &path));
+    }
     println!("[2/2] {} Done!", Emoji("✨", ":-)"));
-    println!("Succeed: {}", &path);
-    Ok(path)
+    for succeed in succeed_list {
+        println!("{}", succeed);
+    }
+    Ok(())
 }
 
 fn parse_section_list(input_s: &str) -> Vec<i32> {
@@ -255,6 +288,42 @@ fn gen_sources() -> Vec<(Platform, Box<&'static Fetcher>)> {
         (DMZJ.clone(), Box::new(&upstream::Dmzj {} as &Fetcher)),
         (HHMH.clone(), Box::new(&upstream::Hhmh {} as &Fetcher)),
     ]
+}
+
+enum OutputFormat {
+    Epub,
+    Pdf,
+}
+
+impl ToString for OutputFormat {
+    fn to_string(&self) -> std::string::String {
+        match self {
+            OutputFormat::Epub => "epub".to_owned(),
+            OutputFormat::Pdf => "pdf".to_owned(),
+        }
+    }
+}
+
+impl OutputFormat {
+    fn find(format_s: &str) -> Result<OutputFormat> {
+        let format_s = format_s.trim();
+        if format_s == "epub" {
+            Ok(OutputFormat::Epub)
+        } else if format_s == "pdf" {
+            Ok(OutputFormat::Pdf)
+        } else {
+            Err(err_msg(format!("unsupported format: {}", format_s)))
+        }
+    }
+}
+
+fn parse_formats(formats: &str) -> Result<Vec<OutputFormat>> {
+    let re = regex::Regex::new("(,|，)").unwrap();
+    let mut list: Vec<OutputFormat> = vec![];
+    for f in re.split(formats).collect::<Vec<&str>>() {
+        list.push(OutputFormat::find(f)?)
+    }
+    Ok(list)
 }
 
 #[cfg(test)]

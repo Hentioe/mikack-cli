@@ -20,7 +20,6 @@ mod tests {
     fn test_exec_succeed() {
         assert_eq!(true, exec_succeed("node", &["-v"]));
         assert_eq!(true, exec_succeed("ebook-convert", &["--version"]));
-        // test failed
         assert_eq!(false, exec_succeed("node", &["-V"]));
     }
 }
