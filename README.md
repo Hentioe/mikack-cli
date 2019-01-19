@@ -26,8 +26,8 @@ Smaller, faster and less dependent [manga](https://github.com/Hentioe/manga).
   - [x] 漫画索引支持查看更多
   - [x] 漫画保存列表支持多选
 - [x] 更多的导出格式支持
-  - [ ] 基于 epub 转换的 mobi
-  - [ ] 基于 epub 转换的 azw3
+  - [x] 基于 epub 转换的 mobi
+  - [x] 基于 epub 转换的 azw3
   - [x] 基于 epub 转换的 pdf
   - [x] 基于参数或终端交互定义输出格式
 - [x] 更多的资源来源支持

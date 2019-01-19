@@ -1,4 +1,6 @@
+pub mod azw3;
 pub mod epub;
+pub mod mobi;
 pub mod pdf;
 pub mod prelude;
 

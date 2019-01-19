@@ -26,7 +26,7 @@ pub fn build_cli() -> App<'static, 'static> {
             Arg::with_name("output-formats")
                 .long("format")
                 .short("f")
-                .help("Saved format (eg: mobi,azw3,pdf)")
+                .help("Saved format (eg: epub,mobi,azw3,pdf)")
                 .takes_value(true)
                 .required(true)
                 .default_value("epub"),

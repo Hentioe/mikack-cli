@@ -230,6 +230,12 @@ fn save(
             OutputFormat::Pdf => {
                 pdf::Pdf::new(platform.clone(), section.clone()).save(output_dir)?
             }
+            OutputFormat::Mobi => {
+                mobi::Mobi::new(platform.clone(), section.clone()).save(output_dir)?
+            }
+            OutputFormat::Azw3 => {
+                azw3::Azw3::new(platform.clone(), section.clone()).save(output_dir)?
+            }
         };
         succeed_list.push(format!("Succeed: {}", &path));
     }
@@ -293,6 +299,8 @@ fn gen_sources() -> Vec<(Platform, Box<&'static Fetcher>)> {
 enum OutputFormat {
     Epub,
     Pdf,
+    Azw3,
+    Mobi,
 }
 
 impl ToString for OutputFormat {
@@ -300,6 +308,8 @@ impl ToString for OutputFormat {
         match self {
             OutputFormat::Epub => "epub".to_owned(),
             OutputFormat::Pdf => "pdf".to_owned(),
+            OutputFormat::Azw3 => "azw3".to_owned(),
+            OutputFormat::Mobi => "mobi".to_owned(),
         }
     }
 }
@@ -311,6 +321,10 @@ impl OutputFormat {
             Ok(OutputFormat::Epub)
         } else if format_s == "pdf" {
             Ok(OutputFormat::Pdf)
+        } else if format_s == "mobi" {
+            Ok(OutputFormat::Mobi)
+        } else if format_s == "azw3" {
+            Ok(OutputFormat::Azw3)
         } else {
             Err(err_msg(format!("unsupported format: {}", format_s)))
         }
