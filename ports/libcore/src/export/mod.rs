@@ -4,7 +4,7 @@ pub mod prelude;
 
 use crate::{check, errors::*, fetch::*};
 
-use std::process::{Command, ExitStatus, Stdio};
+use std::process::{Command, Stdio};
 
 pub fn book_convert(src: &str, dst: &str) -> Result<()> {
     let program = "ebook-convert";

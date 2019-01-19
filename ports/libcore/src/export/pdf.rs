@@ -1,8 +1,4 @@
 use super::{prelude::*, *};
-use crate::VERSION;
-use chrono::{offset::Utc, DateTime};
-use tera::{Context, Tera};
-use uuid::Uuid;
 
 pub struct Pdf {
     pub platform: Platform,
