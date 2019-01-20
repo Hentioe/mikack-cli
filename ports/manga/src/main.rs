@@ -5,6 +5,7 @@ use libcore::{
     export::{prelude::*, *},
     fetch::{prelude::*, *},
 };
+use log::debug;
 use manga::cli;
 use regex::Regex;
 use std::io::prelude::*;
@@ -17,14 +18,19 @@ static TRUCK: Emoji = Emoji("🚚  ", "");
 lazy_static! {
     static ref DMZJ: Platform = Platform::new("动漫之家", "https://manhua.dmzj.com");
     static ref HHMH: Platform = Platform::new("汗汗漫画", "http://www.hhmmoo.com");
+    static ref DMK: Platform = Platform::new("動漫狂", "https://www.cartoonmad.com");
     static ref RE_DETAIL_DMZJ: Regex =
         Regex::new(r#"https?://manhua\.dmzj\.com/[^/]+/\d+\.shtml"#).unwrap();
     static ref RE_DETAIL_HHMH: Regex =
         Regex::new(r#"https?://www\.hhmmoo\.com/page\d+/\d+\.html"#).unwrap();
+    static ref RE_DETAIL_DMK: Regex =
+        Regex::new(r#"https?://www\.cartoonmad\.com/comic/\d{11,}\.html"#).unwrap();
     static ref RE_SECTION_DMZJ: Regex =
         Regex::new(r#"^https?://manhua\.dmzj\.com/[^/]+/$"#).unwrap();
     static ref RE_SECTION_HHMH: Regex =
         Regex::new(r#"^https?://www\.hhmmoo\.com/manhua\d+\.html$"#).unwrap();
+    static ref RE_SECTION_DMK: Regex =
+        Regex::new(r#"^https?://www\.cartoonmad\.com/comic/\d{1,10}.html$"#).unwrap();
 }
 
 fn main() -> Result<()> {
@@ -97,7 +103,8 @@ fn from_source_list(output_dir: &str, formats: Vec<OutputFormat>) -> Result<()> 
 }
 
 fn analysis_url(url: &str, output_dir: &str, formats: Vec<OutputFormat>) -> Result<()> {
-    let section_matches: [(&Regex, &Fetcher, Platform); 2] = [
+    debug!("analysis url: {}", &url);
+    let section_matches: [(&Regex, &Fetcher, Platform); 3] = [
         (
             &RE_DETAIL_DMZJ,
             &upstream::Dmzj {} as &Fetcher,
@@ -108,6 +115,7 @@ fn analysis_url(url: &str, output_dir: &str, formats: Vec<OutputFormat>) -> Resu
             &upstream::Hhmh {} as &Fetcher,
             HHMH.clone(),
         ),
+        (&RE_DETAIL_DMK, &upstream::Dmk {} as &Fetcher, DMK.clone()),
     ];
     let mut passed = false;
     for (re, fr, p) in section_matches.iter() {
@@ -121,7 +129,7 @@ fn analysis_url(url: &str, output_dir: &str, formats: Vec<OutputFormat>) -> Resu
     }
     if !passed {
         // 作为 Detail url 继续检测
-        let detail_matches: [(&Regex, &Fetcher, Platform); 2] = [
+        let detail_matches: [(&Regex, &Fetcher, Platform); 3] = [
             (
                 &RE_SECTION_DMZJ,
                 &upstream::Dmzj {} as &Fetcher,
@@ -132,6 +140,7 @@ fn analysis_url(url: &str, output_dir: &str, formats: Vec<OutputFormat>) -> Resu
                 &upstream::Hhmh {} as &Fetcher,
                 HHMH.clone(),
             ),
+            (&RE_SECTION_DMK, &upstream::Dmk {} as &Fetcher, DMK.clone()),
         ];
 
         for (re, fr, p) in detail_matches.iter() {
@@ -293,6 +302,7 @@ fn gen_sources() -> Vec<(Platform, Box<&'static Fetcher>)> {
     vec![
         (DMZJ.clone(), Box::new(&upstream::Dmzj {} as &Fetcher)),
         (HHMH.clone(), Box::new(&upstream::Hhmh {} as &Fetcher)),
+        (DMK.clone(), Box::new(&upstream::Dmk {} as &Fetcher)),
     ]
 }
 

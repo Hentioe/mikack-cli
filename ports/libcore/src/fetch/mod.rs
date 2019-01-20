@@ -14,7 +14,7 @@ pub struct Platform {
 }
 
 // 漫画详情（例：火影忍者）
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Detail {
     pub name: String,
     pub url: String,
@@ -108,7 +108,7 @@ impl Page {
         Page {
             p,
             url: url.to_string(),
-            mime: "image/jpeg".to_string(),
+            mime: "image/*".to_string(),
             extension: "jpg".to_string(),
         }
     }

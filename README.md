@@ -33,7 +33,7 @@ Smaller, faster and less dependent [manga](https://github.com/Hentioe/manga).
   - [ ] 无格式（none），仅下载原始图片
 - [x] 更多的资源来源支持
   - [ ] www.dm5.com (动漫屋)
-  - [ ] www.cartoonmad.com (动漫狂)
+  - [x] www.cartoonmad.com (动漫狂)
   - [ ] manhua.fzdm.com (风之动漫)
   - [ ] www.gufengmh.com (古风漫画网)
   - [x] www.hhmmoo.com (汗汗漫画)
