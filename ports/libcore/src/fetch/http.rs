@@ -84,10 +84,30 @@ impl SendHelper {
             Err(e) => Result::Err(e),
         }
     }
+
+    pub fn result_bytes(&mut self) -> RawResult {
+        match self.succeed() {
+            Ok(r) => {
+                if r {
+                    let mut buf: Vec<u8> = vec![];
+                    self.response.as_mut().unwrap().copy_to(&mut buf).unwrap();
+                    RawResult::Ok(buf)
+                } else {
+                    RawResult::Err(err_msg("did not get the correct response"))
+                }
+            }
+            Err(e) => RawResult::Err(e),
+        }
+    }
 }
 
 pub enum Result {
     Ok(String),
+    Err(Error),
+}
+
+pub enum RawResult {
+    Ok(Vec<u8>),
     Err(Error),
 }
 

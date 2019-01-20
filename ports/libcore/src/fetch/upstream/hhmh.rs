@@ -286,7 +286,8 @@ mod tests {
     fn test_hhmh_fetch_sections() {
         let mut detail = Detail::new("一拳超人", "http://www.hhmmoo.com/manhua15840.html");
         Hhmh {}.fetch_sections(&mut detail).unwrap();
-        assert_eq!(319, detail.section_list.len());
+        assert_eq!(320, detail.section_list.len());
+        assert_eq!(320, detail.section_list.len());
     }
 
     #[test]
