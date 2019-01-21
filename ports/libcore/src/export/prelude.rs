@@ -70,7 +70,7 @@ impl Epub {
         container.write_all(self.render_container_xml().as_bytes())?;
 
         // 打包成 epub
-        archive::doit(&cache_dir, &cache_file)?;
+        archive::doit(&cache_epub_dir, &cache_file)?;
         Ok(())
     }
 }

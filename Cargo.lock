@@ -647,7 +647,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "libcore"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "chrono 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "encoding_rs 0.8.14 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -701,7 +701,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "manga"
-version = "0.4.0"
+version = "0.4.1-dev"
 dependencies = [
  "clap 2.32.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "console 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -709,7 +709,7 @@ dependencies = [
  "failure 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "indicatif 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "libcore 0.1.4",
+ "libcore 0.1.5",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "regex 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "scan_dir 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
