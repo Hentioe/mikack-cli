@@ -1,4 +1,4 @@
-use super::prelude::*;
+use super::{prelude::*, *};
 use crate::{errors::*, html, http, jsrt, models::*};
 use lazy_static::lazy_static;
 use regex::Regex;
@@ -8,7 +8,6 @@ pub struct Dmzj;
 
 impl Extractor for Dmzj {
     fn index(&self, more: u32) -> Result<Vec<Detail>> {
-        let mut det_list: Vec<Detail> = vec![];
         let url = if more > 0 {
             format!(
                 "https://manhua.dmzj.com/rank/total-block-{}.shtml",
@@ -17,28 +16,9 @@ impl Extractor for Dmzj {
         } else {
             "https://manhua.dmzj.com/rank/".to_string()
         };
-        let mut helper = http::SendHelper::new();
-        helper.send_get(&url)?;
-        match helper.result() {
-            http::Result::Ok(html_s) => {
-                let doc = html::parse_document(&html_s);
-                for element in doc.select(&html::parse_select(".middlerighter span.title > a")?) {
-                    let det = Detail::new(
-                        element
-                            .text()
-                            .next()
-                            .ok_or(err_msg(format!("no text found, {}", element.inner_html())))?,
-                        element
-                            .value()
-                            .attr("href")
-                            .ok_or(err_msg(format!("no href found, {}", element.inner_html())))?,
-                    );
-                    det_list.push(det);
-                }
-                Ok(det_list)
-            }
-            http::Result::Err(e) => Err(e),
-        }
+        let fll: FromLinkList<Detail> =
+            FromLinkList::new(&url, ".middlerighter span.title > a", vec![]);
+        fll.try_get_list()?.result()
     }
 
     fn fetch_sections(&self, detail: &mut Detail) -> Result<()> {
