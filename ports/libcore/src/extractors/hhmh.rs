@@ -231,8 +231,8 @@ mod tests {
 
     #[test]
     fn test_hhmh_index() {
-        let det_list = Hhmh {}.index(0).unwrap();
-        assert_eq!(30, det_list.len());
+        let list = Hhmh {}.index(0).unwrap();
+        assert_eq!(30, list.len());
     }
 
     #[test]
