@@ -52,12 +52,12 @@ fn from_source_list(output_dir: &str, formats: Vec<OutputFormat>) -> Result<()> 
     let mut input = String::new();
     std::io::stdin().read_line(&mut input)?;
     let n = input.trim().parse::<u32>()?;
-    let (_, fetcher, _) = source_list
+    let (_, extractor, _) = source_list
         .get((n - 1) as usize)
         .ok_or(err_msg("no platform selected"))?;
     let mut more = 0;
     loop {
-        let detail_list = fetcher.index(more)?;
+        let detail_list = extractor.index(more)?;
         for (i, detail) in detail_list.iter().enumerate() {
             println!("{}. {}", i + 1, &detail.name);
         }
@@ -166,7 +166,7 @@ fn analysis_url(url: &str, output_dir: &str, formats: Vec<OutputFormat>) -> Resu
 
 fn save(
     url: &str,
-    fetcher: &Fetcher,
+    extractor: &Extractor,
     platform: &Platform,
     output_dir: &str,
     formats: &Vec<OutputFormat>,
@@ -178,7 +178,7 @@ fn save(
         style("[1/2]").bold().dim(),
         LOOKING_GLASS
     );
-    fetcher.fetch_pages(&mut section)?;
+    extractor.fetch_pages(&mut section)?;
     println!("[1/2] {} Done!", Emoji("✨", ":-)"));
     let mut succeed_list: Vec<String> = vec![];
     for f in formats {

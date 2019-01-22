@@ -72,24 +72,24 @@ lazy_static! { // Section url matches
     static ref RE_SECTION_MHG: Regex = build_regex(r#"https?://www\.manhuagui\.com/comic/\d+/\d+.html"#);
 }
 
-lazy_static! { // Fetcher list
-    static ref FETCHER_DMZJ: &'static (Fetcher + Sync) = &upstream::Dmzj {} as &(Fetcher + Sync);
-    static ref FETCHER_HHMH: &'static (Fetcher + Sync) = &upstream::Hhmh {} as &(Fetcher + Sync);
-    static ref FETCHER_DMK: &'static (Fetcher + Sync) = &upstream::Dmk {} as &(Fetcher + Sync);
-    static ref FETCHER_MHG: &'static (Fetcher + Sync) = &upstream::Mhg {} as &(Fetcher + Sync);
+lazy_static! { // Extractor list
+    static ref EXTRACTOR_DMZJ: &'static (Extractor + Sync) = &extractors::Dmzj {} as &(Extractor + Sync);
+    static ref EXTRACTOR_HHMH: &'static (Extractor + Sync) = &extractors::Hhmh {} as &(Extractor + Sync);
+    static ref EXTRACTOR_DMK: &'static (Extractor + Sync) = &extractors::Dmk {} as &(Extractor + Sync);
+    static ref EXTRACTOR_MHG: &'static (Extractor + Sync) = &extractors::Mhg {} as &(Extractor + Sync);
 }
 
 lazy_static! { // Matches
-    pub static ref SECTION_MATCHES: Vec<(&'static Regex, &'static (Fetcher + Sync), Platform)> = vec![
-        (&RE_SECTION_DMZJ, *FETCHER_DMZJ, DMZJ.clone()),
-        (&RE_SECTION_HHMH, *FETCHER_HHMH, HHMH.clone()),
-        (&RE_SECTION_DMK, *FETCHER_DMK, DMK.clone()),
-        (&RE_SECTION_MHG, *FETCHER_MHG, MHG.clone()),
+    pub static ref SECTION_MATCHES: Vec<(&'static Regex, &'static (Extractor + Sync), Platform)> = vec![
+        (&RE_SECTION_DMZJ, *EXTRACTOR_DMZJ, DMZJ.clone()),
+        (&RE_SECTION_HHMH, *EXTRACTOR_HHMH, HHMH.clone()),
+        (&RE_SECTION_DMK, *EXTRACTOR_DMK, DMK.clone()),
+        (&RE_SECTION_MHG, *EXTRACTOR_MHG, MHG.clone()),
     ];
-    pub static ref DETAIL_MATCHES: Vec<(&'static Regex, &'static (Fetcher + Sync), Platform)> = vec![
-        (&RE_DETAIL_DMZJ, *FETCHER_DMZJ, DMZJ.clone()),
-        (&RE_DETAIL_HHMH, *FETCHER_HHMH, HHMH.clone()),
-        (&RE_DETAIL_DMK, *FETCHER_DMK, DMK.clone()),
-        (&RE_DETAIL_MHG, *FETCHER_MHG, MHG.clone()),
+    pub static ref DETAIL_MATCHES: Vec<(&'static Regex, &'static (Extractor + Sync), Platform)> = vec![
+        (&RE_DETAIL_DMZJ, *EXTRACTOR_DMZJ, DMZJ.clone()),
+        (&RE_DETAIL_HHMH, *EXTRACTOR_HHMH, HHMH.clone()),
+        (&RE_DETAIL_DMK, *EXTRACTOR_DMK, DMK.clone()),
+        (&RE_DETAIL_MHG, *EXTRACTOR_MHG, MHG.clone()),
     ];
 }

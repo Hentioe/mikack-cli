@@ -9,7 +9,7 @@ use serde_json::Value;
 
 pub struct Hhmh;
 
-impl Fetcher for Hhmh {
+impl Extractor for Hhmh {
     fn index(&self, more: u32) -> Result<Vec<Detail>> {
         let mut det_list: Vec<Detail> = vec![];
         let url = if more > 0 {

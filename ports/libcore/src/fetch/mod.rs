@@ -1,10 +1,10 @@
 use crate::errors::*;
 use serde_derive::{Deserialize, Serialize};
 
+pub mod extractors;
 pub mod html;
 pub mod http;
 pub mod prelude;
-pub mod upstream;
 
 // 漫画（图片集）平台
 #[derive(Debug, Clone)]

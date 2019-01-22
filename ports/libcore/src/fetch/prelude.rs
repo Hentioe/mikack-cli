@@ -1,6 +1,6 @@
 use super::*;
 
-pub trait Fetcher {
+pub trait Extractor {
     // 显示平台漫画索引
     fn index(&self, more: u32) -> Result<Vec<Detail>>;
     // 抓取章节列表

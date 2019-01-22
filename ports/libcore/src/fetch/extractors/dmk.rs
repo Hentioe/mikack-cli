@@ -6,7 +6,7 @@ use encoding_rs::*;
 
 pub struct Dmk;
 
-impl Fetcher for Dmk {
+impl Extractor for Dmk {
     fn index(&self, more: u32) -> Result<Vec<Detail>> {
         let mut det_list: Vec<Detail> = vec![];
         let url = if more > 0 {

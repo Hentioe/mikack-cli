@@ -9,7 +9,7 @@ use serde_json::Value;
 
 pub struct Dmzj;
 
-impl Fetcher for Dmzj {
+impl Extractor for Dmzj {
     fn index(&self, more: u32) -> Result<Vec<Detail>> {
         let mut det_list: Vec<Detail> = vec![];
         let url = if more > 0 {
