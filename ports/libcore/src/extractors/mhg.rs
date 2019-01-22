@@ -17,7 +17,8 @@ impl Extractor for Mhg {
             "https://www.manhuagui.com/list/japan/view.html".to_string()
         };
 
-        let mut fll: FromLinkList<Detail> = FromLinkList::new(&url, "#contList .ell > a", vec![]);
+        let mut fll: LinkListConverter<Detail> =
+            LinkListConverter::new(&url, "#contList .ell > a", vec![]);
         fll.set_href_prefix("https://www.manhuagui.com");
         fll.try_get_list()?.result()
     }

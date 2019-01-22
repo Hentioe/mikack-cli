@@ -16,8 +16,8 @@ impl Extractor for Dmzj {
         } else {
             "https://manhua.dmzj.com/rank/".to_string()
         };
-        let fll: FromLinkList<Detail> =
-            FromLinkList::new(&url, ".middlerighter span.title > a", vec![]);
+        let fll: LinkListConverter<Detail> =
+            LinkListConverter::new(&url, ".middlerighter span.title > a", vec![]);
         fll.try_get_list()?.result()
     }
 

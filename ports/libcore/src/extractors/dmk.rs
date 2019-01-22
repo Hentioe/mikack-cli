@@ -1,4 +1,4 @@
-use super::prelude::*;
+use super::{prelude::*, *};
 use crate::{errors::*, html, http, models::*};
 use encoding_rs::*;
 
@@ -6,7 +6,6 @@ pub struct Dmk;
 
 impl Extractor for Dmk {
     fn index(&self, more: u32) -> Result<Vec<Detail>> {
-        let mut det_list: Vec<Detail> = vec![];
         let url = if more > 0 {
             let more = more + 1;
             let page_s = if more < 10 {
@@ -18,42 +17,13 @@ impl Extractor for Dmk {
         } else {
             "https://www.cartoonmad.com/endcm.html".to_string()
         };
-        let mut helper = http::SendHelper::new();
-        helper.send_get(&url)?;
-        match helper.result_bytes() {
-            http::RawResult::Ok(resp_bytes) => {
-                let (cow, _encoding_used, had_errors) = BIG5.decode(&resp_bytes);
-                if had_errors {
-                    return Err(err_msg(format!(
-                        "character encoding conversion failed, {}",
-                        &url
-                    )));
-                }
-                let doc = html::parse_document(&cow[..]);
-                for element in doc.select(&html::parse_select(
-                    "td[colspan=\"2\"] td[align=\"center\"] > a",
-                )?) {
-                    let text = element
-                        .text()
-                        .next()
-                        .ok_or(err_msg(format!("no text found, {}", element.inner_html())))?;
-                    let det = Detail::new(
-                        text,
-                        &format!(
-                            "{}{}",
-                            "http://www.cartoonmad.com/",
-                            element.value().attr("href").ok_or(err_msg(format!(
-                                "no href found, {}",
-                                element.inner_html()
-                            )))?
-                        ),
-                    );
-                    det_list.push(det);
-                }
-                Ok(det_list[0..(det_list.len() - 6)].to_vec())
-            }
-            http::RawResult::Err(e) => Err(e),
-        }
+
+        let mut fll: LinkListConverter<Detail> =
+            LinkListConverter::new(&url, "td[colspan=\"2\"] td[align=\"center\"] > a", vec![]);
+        fll.set_href_prefix("http://www.cartoonmad.com/")
+            .set_encoding(BIG5);
+        let list = fll.try_get_list()?.list;
+        Ok(list[0..list.len() - 6].to_vec())
     }
 
     fn fetch_sections(&self, detail: &mut Detail) -> Result<()> {

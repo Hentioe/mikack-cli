@@ -13,8 +13,8 @@ impl Extractor for Hhmh {
         } else {
             "http://www.hhmmoo.com/comic/".to_string()
         };
-        let mut fll: FromLinkList<Detail> =
-            FromLinkList::new(&url, "#list .cComicList > li > a", vec![]);
+        let mut fll: LinkListConverter<Detail> =
+            LinkListConverter::new(&url, "#list .cComicList > li > a", vec![]);
         fll.set_href_prefix("http://www.hhmmoo.com");
         fll.try_get_list()?.result()
     }

@@ -10,11 +10,37 @@ pub trait Extractor {
     fn fetch_pages(&self, section: &mut Section) -> Result<()>;
 }
 
-impl<'a> FromLinkList<'a, Detail> {
-    pub fn try_get_list(mut self) -> Result<Self> {
+impl<'a, T> LinkListConverter<'a, T> {
+    pub fn get_send_result(&self) -> Result<http::Result> {
         let mut helper = http::SendHelper::new();
         helper.send_get(self.url)?;
-        match helper.result() {
+        if self.encoding.is_none() {
+            Ok(helper.result())
+        } else {
+            match helper.result_bytes() {
+                http::RawResult::Ok(resp_bytes) => {
+                    let (cow, _encoding_used, had_errors) =
+                        self.encoding.as_ref().unwrap().decode(&resp_bytes);
+                    if had_errors {
+                        return Ok(http::Result::Err(err_msg(format!(
+                            "character encoding conversion failed, {}",
+                            self.url
+                        ))));
+                    }
+                    Ok(http::Result::Ok(cow[..].to_string()))
+                }
+                http::RawResult::Err(e) => Ok(http::Result::Err(e)),
+            }
+        }
+    }
+}
+
+impl<'a, T> LinkListConverter<'a, T>
+where
+    T: FromLinkData,
+{
+    pub fn try_get_list(mut self) -> Result<Self> {
+        match self.get_send_result()? {
             http::Result::Ok(html_s) => {
                 let doc = html::parse_document(&html_s);
                 for element in doc.select(&html::parse_select(self.selector)?) {
@@ -26,15 +52,31 @@ impl<'a> FromLinkList<'a, Detail> {
                         .value()
                         .attr("href")
                         .ok_or(err_msg(format!("no href found, {}", element.inner_html())))?;
-                    let detail = Detail::new(
+                    let data = T::from(
                         &format!("{}{}", self.text_prefix, text),
                         &format!("{}{}", self.href_prefix, href),
                     );
-                    self.list.push(detail);
+                    self.list.push(data);
                 }
                 Ok(self)
             }
             http::Result::Err(e) => Err(e),
         }
+    }
+}
+
+pub trait FromLinkData {
+    fn from(text: &str, url: &str) -> Self;
+}
+
+impl FromLinkData for Detail {
+    fn from(text: &str, url: &str) -> Self {
+        Self::new(text, url)
+    }
+}
+
+impl FromLinkData for Section {
+    fn from(text: &str, url: &str) -> Self {
+        Self::new(text, url)
     }
 }
