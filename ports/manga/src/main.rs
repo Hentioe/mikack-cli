@@ -1,8 +1,9 @@
 use console::{style, Emoji};
 use libcore::{
     errors::*,
-    export::{prelude::*, *},
-    fetch::{prelude::*, *},
+    exporters::{prelude::*, *},
+    extractors::prelude::*,
+    models::*,
 };
 use log::debug;
 use manga::cli;

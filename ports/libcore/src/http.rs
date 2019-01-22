@@ -1,5 +1,4 @@
-use super::*;
-use crate::errors::Result as ErrResult;
+use crate::errors::{Result as ErrResult, *};
 use lazy_static::lazy_static;
 use reqwest::{
     header::{HeaderMap, HeaderName, HeaderValue, USER_AGENT},

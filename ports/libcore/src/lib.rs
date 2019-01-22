@@ -1,9 +1,12 @@
 pub mod archive;
 pub mod check;
 pub mod errors;
-pub mod export;
-pub mod fetch;
+pub mod exporters;
+pub mod extractors;
+pub mod html;
+pub mod http;
 pub mod jsrt;
+pub mod models;
 pub mod progress;
 pub mod storage;
 
@@ -12,8 +15,9 @@ pub const CACHE_DIR_NAME: &'static str = ".cache";
 pub const ORIGIN_DIR_NAME: &'static str = "origins";
 pub const DEFAULT_OUTPUT_DIR: &'static str = "manga_res/outputs";
 
-use fetch::{prelude::*, *};
+use extractors::prelude::*;
 use lazy_static::lazy_static;
+use models::*;
 use regex::Regex;
 use std::path::PathBuf;
 

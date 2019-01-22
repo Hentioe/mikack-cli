@@ -1,4 +1,4 @@
-use super::*;
+use crate::{errors::*, models::*};
 
 pub trait Extractor {
     // 显示平台漫画索引

@@ -4,7 +4,7 @@ pub mod mobi;
 pub mod pdf;
 pub mod prelude;
 
-use crate::{check, errors::*, fetch::*};
+use crate::{check, errors::*, models::*};
 
 use std::process::{Command, Stdio};
 

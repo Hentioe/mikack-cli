@@ -1,8 +1,5 @@
-use crate::{
-    errors::*,
-    fetch::{html, http, prelude::*, *},
-    jsrt,
-};
+use super::prelude::*;
+use crate::{errors::*, html, http, jsrt, models::*};
 use lazy_static::lazy_static;
 use regex::Regex;
 use serde_json::Value;

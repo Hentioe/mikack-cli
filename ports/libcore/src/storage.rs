@@ -1,9 +1,5 @@
 use crate::errors::{Result as FaultTolerance, *};
-use crate::{
-    fetch::{http::*, *},
-    get_origin_path,
-    progress::*,
-};
+use crate::{get_origin_path, http::*, models::*, progress::*};
 use reqwest::header::{HeaderValue, REFERER};
 use serde_derive::{Deserialize, Serialize};
 use serde_json::Value;

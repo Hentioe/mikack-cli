@@ -1,7 +1,5 @@
-use crate::{
-    errors::*,
-    fetch::{html, http, prelude::*, *},
-};
+use super::prelude::*;
+use crate::{errors::*, html, http, models::*};
 use encoding_rs::*;
 
 pub struct Dmk;

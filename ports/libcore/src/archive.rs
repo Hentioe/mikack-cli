@@ -32,7 +32,6 @@ where
             .unwrap();
 
         if path.is_file() {
-            //            println!("adding {:?} as {:?} ...", path, name);
             zip.start_file(name, options)?;
             let mut f = File::open(path)?;
 
