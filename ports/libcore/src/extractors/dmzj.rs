@@ -23,47 +23,23 @@ impl Extractor for Dmzj {
 
     fn fetch_sections(&self, detail: &mut Detail) -> Result<()> {
         let url = &detail.url;
-        let mut helper = http::SendHelper::new();
-        helper.send_get(url)?;
-
-        match helper.result() {
-            http::Result::Ok(html_s) => {
-                let doc = html::parse_document(&html_s);
-                let title_e = doc
-                    .select(&html::parse_select(".anim_title_text > a > h1")?)
-                    .next()
-                    .ok_or(err_msg(format!("no title found, {}", &detail.url)))?;
-                let title = title_e.text().next().ok_or(err_msg(format!(
-                    "no title found, {}",
-                    &title_e.inner_html()
-                )))?;
-                for element in doc.select(&html::parse_select(
-                    ".middleright_mr > div > ul > li > a[title]",
-                )?) {
-                    let sec = Section::new(
-                        &format!(
-                            "{} {}",
-                            &title,
-                            element.text().next().ok_or(err_msg(format!(
-                                "no text found, {}",
-                                element.inner_html()
-                            )),)?
-                        ),
-                        &format!(
-                            "{}{}",
-                            "https://manhua.dmzj.com",
-                            element.value().attr("href").ok_or(err_msg(format!(
-                                "no href found, {}",
-                                element.inner_html()
-                            )))?
-                        ),
-                    );
-                    detail.add_section(sec);
-                }
-                Ok(())
-            }
-            http::Result::Err(e) => Err(e),
-        }
+        let mut fll: LinkListConverter<Section> =
+            LinkListConverter::new(&url, ".middleright_mr > div > ul > li > a[title]", vec![]);
+        fll.text_prefix_finder(&|doc| {
+            let title_e = doc
+                .select(&html::parse_select(".anim_title_text > a > h1")?)
+                .next()
+                .ok_or(err_msg(format!("no title found")))?;
+            let title = title_e.text().next().ok_or(err_msg(format!(
+                "no title found, {}",
+                &title_e.inner_html()
+            )))?;
+            Ok(title.to_string())
+        });
+        fll.set_href_prefix("https://manhua.dmzj.com");
+        let section_list = fll.try_get_list()?.result()?;
+        detail.section_list = section_list;
+        Ok(())
     }
 
     fn fetch_pages(&self, section: &mut Section) -> Result<()> {
@@ -132,9 +108,9 @@ mod tests {
 
     #[test]
     fn test_dmzj_fetch_sections() {
-        let mut datail = Detail::new("一拳超人", "https://manhua.dmzj.com/yiquanchaoren/");
-        Dmzj {}.fetch_sections(&mut datail).unwrap();
-        assert_eq!(376, datail.section_list.len());
+        let mut detail = Detail::new("一拳超人", "https://manhua.dmzj.com/yiquanchaoren/");
+        Dmzj {}.fetch_sections(&mut detail).unwrap();
+        assert_eq!(376, detail.section_list.len());
     }
 
     #[test]

@@ -1,3 +1,5 @@
+#![feature(fn_traits)]
+
 pub mod archive;
 pub mod check;
 pub mod errors;

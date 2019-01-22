@@ -43,6 +43,13 @@ where
         match self.get_send_result()? {
             http::Result::Ok(html_s) => {
                 let doc = html::parse_document(&html_s);
+                let mut prefix = String::new();
+                if self.find_text_prefix.is_some() {
+                    prefix = format!(
+                        "{} ",
+                        self.find_text_prefix.as_ref().unwrap().call((&doc,))?
+                    );
+                }
                 for element in doc.select(&html::parse_select(self.selector)?) {
                     let text = element
                         .text()
@@ -53,7 +60,7 @@ where
                         .attr("href")
                         .ok_or(err_msg(format!("no href found, {}", element.inner_html())))?;
                     let data = T::from(
-                        &format!("{}{}", self.text_prefix, text),
+                        &format!("{}{}", prefix, text),
                         &format!("{}{}", self.href_prefix, href),
                     );
                     self.list.push(data);

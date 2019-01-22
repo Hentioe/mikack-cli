@@ -21,33 +21,12 @@ impl Extractor for Hhmh {
 
     fn fetch_sections(&self, detail: &mut Detail) -> Result<()> {
         let url = &detail.url;
-        let mut helper = http::SendHelper::new();
-        helper.send_get(url)?;
-
-        match helper.result() {
-            http::Result::Ok(html_s) => {
-                let doc = html::parse_document(&html_s);
-                for element in doc.select(&html::parse_select(".cVolUl > li > a")?) {
-                    let sec = Section::new(
-                        element
-                            .text()
-                            .next()
-                            .ok_or(err_msg(format!("no text found, {}", element.inner_html())))?,
-                        &format!(
-                            "{}{}",
-                            "http://www.hhmmoo.com",
-                            element.value().attr("href").ok_or(err_msg(format!(
-                                "no href found, {}",
-                                element.inner_html()
-                            )))?
-                        ),
-                    );
-                    detail.add_section(sec);
-                }
-                Ok(())
-            }
-            http::Result::Err(e) => Err(e),
-        }
+        let mut fll: LinkListConverter<Section> =
+            LinkListConverter::new(&url, ".cVolUl > li > a", vec![]);
+        fll.set_href_prefix("http://www.hhmmoo.com");
+        let section_list = fll.try_get_list()?.result()?;
+        detail.section_list = section_list;
+        Ok(())
     }
 
     fn fetch_pages(&self, section: &mut Section) -> Result<()> {
@@ -260,7 +239,6 @@ mod tests {
     fn test_hhmh_fetch_sections() {
         let mut detail = Detail::new("一拳超人", "http://www.hhmmoo.com/manhua15840.html");
         Hhmh {}.fetch_sections(&mut detail).unwrap();
-        assert_eq!(320, detail.section_list.len());
         assert_eq!(320, detail.section_list.len());
     }
 

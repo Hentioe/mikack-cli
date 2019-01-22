@@ -25,33 +25,23 @@ impl Extractor for Mhg {
 
     fn fetch_sections(&self, detail: &mut Detail) -> Result<()> {
         let url = &detail.url;
-        let mut helper = http::SendHelper::new();
-        helper.send_get(url)?;
-
-        match helper.result() {
-            http::Result::Ok(html_s) => {
-                let doc = html::parse_document(&html_s);
-                for element in doc.select(&html::parse_select("li > a[class=\"status0\"]")?) {
-                    let sec = Section::new(
-                        element
-                            .text()
-                            .next()
-                            .ok_or(err_msg(format!("no text found, {}", element.inner_html())))?,
-                        &format!(
-                            "{}{}",
-                            "https://www.manhuagui.com",
-                            element.value().attr("href").ok_or(err_msg(format!(
-                                "no href found, {}",
-                                element.inner_html()
-                            )))?
-                        ),
-                    );
-                    detail.add_section(sec);
-                }
-                Ok(())
-            }
-            http::Result::Err(e) => Err(e),
-        }
+        let mut fll: LinkListConverter<Section> =
+            LinkListConverter::new(&url, "li > a[class=\"status0\"]", vec![]);
+        fll.set_href_prefix("https://www.manhuagui.com")
+            .text_prefix_finder(&|doc| {
+                let name = doc
+                    .select(&html::parse_select(".book-title > h1")?)
+                    .next()
+                    .ok_or(err_msg(format!("did not get the name")))?
+                    .text()
+                    .next()
+                    .ok_or(err_msg(format!("did not get the name")))?
+                    .to_string();
+                Ok(name)
+            });
+        let section_list = fll.try_get_list()?.result()?;
+        detail.section_list = section_list;
+        Ok(())
     }
 
     fn fetch_pages(&self, section: &mut Section) -> Result<()> {

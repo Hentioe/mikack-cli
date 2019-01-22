@@ -11,6 +11,7 @@ pub use mhg::*;
 
 use crate::errors::*;
 use encoding_rs::Encoding;
+use scraper::Html;
 use std::option::Option;
 
 struct LinkListConverter<'a, T> {
@@ -18,8 +19,8 @@ struct LinkListConverter<'a, T> {
     selector: &'a str,
     list: Vec<T>,
     href_prefix: &'a str,
-    text_prefix: &'a str,
     encoding: Option<&'static Encoding>,
+    find_text_prefix: Option<&'a Fn(&Html) -> Result<String>>,
 }
 
 impl<'a, T> LinkListConverter<'a, T> {
@@ -29,8 +30,8 @@ impl<'a, T> LinkListConverter<'a, T> {
             selector,
             list,
             href_prefix: "",
-            text_prefix: "",
             encoding: None,
+            find_text_prefix: None,
         }
     }
 
@@ -39,13 +40,13 @@ impl<'a, T> LinkListConverter<'a, T> {
         self
     }
 
-    pub fn set_text_prefix(&mut self, prefix: &'a str) -> &mut Self {
-        self.text_prefix = prefix;
+    pub fn set_encoding(&mut self, encoding: &'static Encoding) -> &mut Self {
+        self.encoding = Some(encoding);
         self
     }
 
-    pub fn set_encoding(&mut self, encoding: &'static Encoding) -> &mut Self {
-        self.encoding = Some(encoding);
+    pub fn text_prefix_finder(&mut self, finder: &'a Fn(&Html) -> Result<String>) -> &mut Self {
+        self.find_text_prefix = Some(finder);
         self
     }
 

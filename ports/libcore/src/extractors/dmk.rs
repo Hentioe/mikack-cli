@@ -28,54 +28,26 @@ impl Extractor for Dmk {
 
     fn fetch_sections(&self, detail: &mut Detail) -> Result<()> {
         let url = &detail.url;
-        let mut helper = http::SendHelper::new();
-        helper.send_get(url)?;
-
-        match helper.result_bytes() {
-            http::RawResult::Ok(resp_bytes) => {
-                let (cow, _encoding_used, had_errors) = BIG5.decode(&resp_bytes);
-                if had_errors {
-                    return Err(err_msg(format!(
-                        "character encoding conversion failed, {}",
-                        &url
-                    )));
-                }
-                let doc = html::parse_document(&cow[..]);
+        let mut fll: LinkListConverter<Section> =
+            LinkListConverter::new(&url, "fieldset td > a", vec![]);
+        fll.set_href_prefix("http://www.cartoonmad.com")
+            .set_encoding(BIG5)
+            .text_prefix_finder(&|doc| {
                 let name = doc
                     .select(&html::parse_select("title")?)
                     .next()
-                    .ok_or(err_msg(format!("did not get the page title, {}", &url)))?
+                    .ok_or(err_msg(format!("did not get the page title")))?
                     .text()
                     .next()
-                    .ok_or(err_msg(format!("did not get the page title, {}", &url)))?
+                    .ok_or(err_msg(format!("did not get the page title")))?
                     .trim()
                     .replace(" - 免費漫畫區 - 動漫狂", "")
                     .to_string();
-                for element in doc.select(&html::parse_select("fieldset td > a")?) {
-                    let sec = Section::new(
-                        &format!(
-                            "{} {}",
-                            &name,
-                            element.text().next().ok_or(err_msg(format!(
-                                "no text found, {}",
-                                element.inner_html()
-                            )))?
-                        ),
-                        &format!(
-                            "{}{}",
-                            "http://www.cartoonmad.com",
-                            element.value().attr("href").ok_or(err_msg(format!(
-                                "no href found, {}",
-                                element.inner_html()
-                            )))?
-                        ),
-                    );
-                    detail.add_section(sec);
-                }
-                Ok(())
-            }
-            http::RawResult::Err(e) => Err(e),
-        }
+                Ok(name)
+            });
+        let section_list = fll.try_get_list()?.result()?;
+        detail.section_list = section_list;
+        Ok(())
     }
 
     fn fetch_pages(&self, section: &mut Section) -> Result<()> {
