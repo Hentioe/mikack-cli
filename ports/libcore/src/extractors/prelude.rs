@@ -51,10 +51,15 @@ where
                     );
                 }
                 for element in doc.select(&html::parse_select(self.selector)?) {
-                    let text = element
-                        .text()
-                        .next()
-                        .ok_or(err_msg(format!("no text found, {}", element.inner_html())))?;
+                    let text = if self.text_in_dom.is_some() {
+                        let selectors = self.text_in_dom.as_ref().unwrap();
+                        html::find_text_in_element(&element, selectors)?
+                    } else {
+                        element
+                            .text()
+                            .next()
+                            .ok_or(err_msg(format!("no text found, {}", element.inner_html())))?
+                    };
                     let href = element
                         .value()
                         .attr("href")

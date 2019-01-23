@@ -1,4 +1,4 @@
-use scraper::{Html, Selector};
+use scraper::{ElementRef, Html, Selector};
 
 use crate::errors::*;
 
@@ -17,6 +17,21 @@ pub fn parse_select(selectors: &str) -> Result<Selector> {
 
 pub fn find_text<'a>(doc: &'a Html, selectors: &str) -> Result<&'a str> {
     doc.select(&parse_select(selectors)?)
+        .next()
+        .ok_or(err_msg(format!(
+            "no element found based on selector ‘{}’",
+            selectors
+        )))?
+        .text()
+        .next()
+        .ok_or(err_msg(format!(
+            "no text value found based on selector ‘{}’",
+            selectors
+        )))
+}
+
+pub fn find_text_in_element<'a>(elem: &'a ElementRef, selectors: &str) -> Result<&'a str> {
+    elem.select(&parse_select(selectors)?)
         .next()
         .ok_or(err_msg(format!(
             "no element found based on selector ‘{}’",

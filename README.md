@@ -36,7 +36,7 @@ Smaller, faster and less dependent [manga](https://github.com/Hentioe/manga).
   - [ ] www.dm5.com (动漫屋)
   - [x] www.cartoonmad.com (动漫狂)
   - [ ] manhua.fzdm.com (风之动漫)
-  - [ ] www.gufengmh.com (古风漫画网)
+  - [x] www.gufengmh.com (古风漫画网)
   - [x] www.hhmmoo.com (汗汗漫画)
   - [ ] comic.kukudm.com (KuKu动漫)
   - [x] www.manhuagui.com (漫画柜)
