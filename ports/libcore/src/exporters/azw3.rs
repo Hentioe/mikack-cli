@@ -1,17 +1,17 @@
 use super::{prelude::*, *};
 
-pub struct Azw3 {
-    pub platform: Platform,
+pub struct Azw3<'a> {
+    pub platform: Platform<'a>,
     pub section: Section,
 }
 
-impl Azw3 {
-    pub fn new(platform: Platform, section: Section) -> Self {
+impl<'a> Azw3<'a> {
+    pub fn new(platform: Platform<'a>, section: Section) -> Self {
         Self { platform, section }
     }
 }
 
-impl Exporter for Azw3 {
+impl<'a> Exporter for Azw3<'a> {
     fn save(&mut self, output_dir: &str) -> Result<String> {
         // 建立输出目录
         std::fs::create_dir_all(output_dir)?;

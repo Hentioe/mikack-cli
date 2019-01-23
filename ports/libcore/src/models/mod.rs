@@ -1,10 +1,10 @@
 use serde_derive::{Deserialize, Serialize};
 
 // 漫画（图片集）平台
-#[derive(Debug, Clone)]
-pub struct Platform {
-    pub name: String,
-    pub url: String,
+#[derive(Debug, Clone, Copy)]
+pub struct Platform<'a> {
+    pub name: &'a str,
+    pub url: &'a str,
 }
 
 // 漫画详情（例：火影忍者）
@@ -40,12 +40,9 @@ impl Page {
 
 pub const UNKNOWN_NAME: &'static str = "[UNNAMED]";
 
-impl Platform {
-    pub fn new(name: &str, url: &str) -> Self {
-        Platform {
-            name: name.to_owned(),
-            url: url.to_owned(),
-        }
+impl<'a> Platform<'a> {
+    pub fn new(name: &'a str, url: &'a str) -> Self {
+        Platform { name, url }
     }
 }
 

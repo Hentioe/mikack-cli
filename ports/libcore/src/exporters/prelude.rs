@@ -7,7 +7,7 @@ pub trait Exporter {
     fn save(&mut self, output_dir: &str) -> Result<String>;
 }
 
-impl Epub {
+impl<'a> Epub<'a> {
     pub fn cache(&mut self) -> Result<()> {
         let cache_dir = format!("manga_res/{}/.cache", &self.section.name);
         let cache_file = format!("{}/{}.epub", &cache_dir, &self.section.name);

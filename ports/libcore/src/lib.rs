@@ -58,10 +58,10 @@ fn build_regex(expr: &str) -> Regex {
 }
 
 lazy_static! { // Platform list
-    static ref DMZJ: Platform = Platform::new("动漫之家", "https://manhua.dmzj.com");
-    static ref HHMH: Platform = Platform::new("汗汗漫画", "http://www.hhmmoo.com");
-    static ref DMK: Platform = Platform::new("動漫狂", "https://www.cartoonmad.com");
-    static ref MHG: Platform = Platform::new("漫画柜", "https://www.manhuagui.com");
+    static ref DMZJ: Platform<'static> = Platform::new("动漫之家", "https://manhua.dmzj.com");
+    static ref HHMH: Platform<'static> = Platform::new("汗汗漫画", "http://www.hhmmoo.com");
+    static ref DMK: Platform<'static> = Platform::new("動漫狂", "https://www.cartoonmad.com");
+    static ref MHG: Platform<'static> = Platform::new("漫画柜", "https://www.manhuagui.com");
 }
 
 lazy_static! { // Detail url matches
@@ -86,16 +86,16 @@ lazy_static! { // Extractor list
 }
 
 lazy_static! { // Matches
-    pub static ref SECTION_MATCHES: Vec<(&'static Regex, &'static (Extractor + Sync), Platform)> = vec![
-        (&RE_SECTION_DMZJ, *EXTRACTOR_DMZJ, DMZJ.clone()),
-        (&RE_SECTION_HHMH, *EXTRACTOR_HHMH, HHMH.clone()),
-        (&RE_SECTION_DMK, *EXTRACTOR_DMK, DMK.clone()),
-        (&RE_SECTION_MHG, *EXTRACTOR_MHG, MHG.clone()),
+    pub static ref SECTION_MATCHES: Vec<(&'static Regex, &'static (Extractor + Sync), Platform<'static>)> = vec![
+        (&RE_SECTION_DMZJ, *EXTRACTOR_DMZJ, *DMZJ),
+        (&RE_SECTION_HHMH, *EXTRACTOR_HHMH, *HHMH),
+        (&RE_SECTION_DMK, *EXTRACTOR_DMK, *DMK),
+        (&RE_SECTION_MHG, *EXTRACTOR_MHG, *MHG),
     ];
-    pub static ref DETAIL_MATCHES: Vec<(&'static Regex, &'static (Extractor + Sync), Platform)> = vec![
-        (&RE_DETAIL_DMZJ, *EXTRACTOR_DMZJ, DMZJ.clone()),
-        (&RE_DETAIL_HHMH, *EXTRACTOR_HHMH, HHMH.clone()),
-        (&RE_DETAIL_DMK, *EXTRACTOR_DMK, DMK.clone()),
-        (&RE_DETAIL_MHG, *EXTRACTOR_MHG, MHG.clone()),
+    pub static ref DETAIL_MATCHES: Vec<(&'static Regex, &'static (Extractor + Sync), Platform<'static>)> = vec![
+        (&RE_DETAIL_DMZJ, *EXTRACTOR_DMZJ, *DMZJ),
+        (&RE_DETAIL_HHMH, *EXTRACTOR_HHMH, *HHMH),
+        (&RE_DETAIL_DMK, *EXTRACTOR_DMK, *DMK),
+        (&RE_DETAIL_MHG, *EXTRACTOR_MHG, *MHG),
     ];
 }

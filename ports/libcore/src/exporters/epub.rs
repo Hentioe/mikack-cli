@@ -4,14 +4,14 @@ use chrono::{offset::Utc, DateTime};
 use tera::{Context, Tera};
 use uuid::Uuid;
 
-pub struct Epub {
-    pub platform: Platform,
+pub struct Epub<'a> {
+    pub platform: Platform<'a>,
     pub section: Section,
     pub uuid: String,
 }
 
-impl Epub {
-    pub fn new(platform: Platform, section: Section) -> Self {
+impl<'a> Epub<'a> {
+    pub fn new(platform: Platform<'a>, section: Section) -> Self {
         let uuid = Uuid::new_v4().to_hyphenated().to_string();
         Self {
             platform,
@@ -197,7 +197,7 @@ impl Epub {
     }
 }
 
-impl Exporter for Epub {
+impl<'a> Exporter for Epub<'a> {
     fn save(&mut self, output_dir: &str) -> Result<String> {
         // 建立输出目录
         std::fs::create_dir_all(output_dir)?;

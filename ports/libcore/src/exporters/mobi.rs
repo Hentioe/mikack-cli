@@ -1,17 +1,17 @@
 use super::{prelude::*, *};
 
-pub struct Mobi {
-    pub platform: Platform,
+pub struct Mobi<'a> {
+    pub platform: Platform<'a>,
     pub section: Section,
 }
 
-impl Mobi {
-    pub fn new(platform: Platform, section: Section) -> Self {
+impl<'a> Mobi<'a> {
+    pub fn new(platform: Platform<'a>, section: Section) -> Self {
         Self { platform, section }
     }
 }
 
-impl Exporter for Mobi {
+impl<'a> Exporter for Mobi<'a> {
     fn save(&mut self, output_dir: &str) -> Result<String> {
         // 建立输出目录
         std::fs::create_dir_all(output_dir)?;

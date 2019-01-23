@@ -1,17 +1,17 @@
 use super::{prelude::*, *};
 
-pub struct Pdf {
-    pub platform: Platform,
+pub struct Pdf<'a> {
+    pub platform: Platform<'a>,
     pub section: Section,
 }
 
-impl Pdf {
-    pub fn new(platform: Platform, section: Section) -> Self {
+impl<'a> Pdf<'a> {
+    pub fn new(platform: Platform<'a>, section: Section) -> Self {
         Self { platform, section }
     }
 }
 
-impl Exporter for Pdf {
+impl<'a> Exporter for Pdf<'a> {
     fn save(&mut self, output_dir: &str) -> Result<String> {
         // 建立输出目录
         std::fs::create_dir_all(output_dir)?;
