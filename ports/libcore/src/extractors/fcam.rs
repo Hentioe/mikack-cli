@@ -2,7 +2,6 @@ use super::{prelude::*, *};
 use crate::{errors::*, html, http, jsrt, models::*};
 use lazy_static::lazy_static;
 use regex::Regex;
-use serde_json::Value;
 
 pub struct Fcam;
 
@@ -24,14 +23,7 @@ impl Extractor for Fcam {
             LinkListConverter::new(&url, ".chapters > ul.clearfix > li > a", vec![]);
         fll.set_href_prefix("http://www.verydm.com")
             .text_prefix_finder(&|doc| {
-                let name = doc
-                    .select(&html::parse_select(".comic-name > h1")?)
-                    .next()
-                    .ok_or(err_msg(format!("did not get the name")))?
-                    .text()
-                    .next()
-                    .ok_or(err_msg(format!("did not get the name")))?
-                    .to_string();
+                let name = html::find_text(doc, ".comic-name > h1")?.to_string();
                 Ok(name)
             });
         let section_list = fll.try_get_list()?.result()?;
@@ -44,10 +36,30 @@ impl Extractor for Fcam {
         helper.send_get(&section.url)?;
 
         match helper.result() {
-            http::Result::Ok(html_s) => Ok(()),
+            http::Result::Ok(html_s) => {
+                let doc = &html::parse_document(&html_s);
+                let url = html::find_attr(doc, ".main[style=\"display:block\"] > img", "src")?;
+                let caps = RE_PREFIX_SUFFIX
+                    .captures(&html_s)
+                    .ok_or(err_msg("did not match prefix or suffix"))?;
+                let prefix = caps
+                    .get(1)
+                    .ok_or(err_msg(format!("no prefix found, {}", &section.url)))?
+                    .as_str();
+                let suffix = caps
+                    .get(2)
+                    .ok_or(err_msg(format!("no suffix found, {}", &section.url)))?
+                    .as_str();
+                //                println!("{},{}", prefix, suffix);
+                Ok(())
+            }
             http::Result::Err(e) => Err(e),
         }
     }
+}
+
+lazy_static! {
+    static ref RE_PREFIX_SUFFIX: Regex = Regex::new(r#"^(.+)/\d{3,}.([^/]+)$"#).unwrap();
 }
 
 #[cfg(test)]
@@ -77,7 +89,7 @@ mod tests {
     //            "火影忍者 第700话",
     //            "http://www.verydm.com/chapter.php?id=48141",
     //        );
-    //        Hhmh {}.fetch_pages(&mut section).unwrap();
+    //        Fcam {}.fetch_pages(&mut section).unwrap();
     //        assert_eq!(21, section.page_list.len());
     //    }
 }

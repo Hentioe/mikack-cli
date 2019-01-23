@@ -33,13 +33,7 @@ impl Extractor for Dmk {
         fll.set_href_prefix("http://www.cartoonmad.com")
             .set_encoding(BIG5)
             .text_prefix_finder(&|doc| {
-                let name = doc
-                    .select(&html::parse_select("title")?)
-                    .next()
-                    .ok_or(err_msg(format!("did not get the page title")))?
-                    .text()
-                    .next()
-                    .ok_or(err_msg(format!("did not get the page title")))?
+                let name = html::find_text(doc, "title")?
                     .trim()
                     .replace(" - 免費漫畫區 - 動漫狂", "")
                     .to_string();

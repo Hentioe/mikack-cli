@@ -15,6 +15,36 @@ pub fn parse_select(selectors: &str) -> Result<Selector> {
         .map_err(|_e| err_msg(format!("selectors: `{}` parsing failed", selectors)))?)
 }
 
+pub fn find_text<'a>(doc: &'a Html, selectors: &str) -> Result<&'a str> {
+    doc.select(&parse_select(selectors)?)
+        .next()
+        .ok_or(err_msg(format!(
+            "no element found based on selector ‘{}’",
+            selectors
+        )))?
+        .text()
+        .next()
+        .ok_or(err_msg(format!(
+            "no text value found based on selector ‘{}’",
+            selectors
+        )))
+}
+
+pub fn find_attr<'a>(doc: &'a Html, selectors: &str, attr: &str) -> Result<&'a str> {
+    doc.select(&parse_select(selectors)?)
+        .next()
+        .ok_or(err_msg(format!(
+            "no element found based on selector ‘{}’",
+            selectors
+        )))?
+        .value()
+        .attr(attr)
+        .ok_or(err_msg(format!(
+            "no attr '{}' found based on selector ‘{}’",
+            attr, selectors
+        )))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -26,14 +26,7 @@ impl Extractor for Dmzj {
         let mut fll: LinkListConverter<Section> =
             LinkListConverter::new(&url, ".middleright_mr > div > ul > li > a[title]", vec![]);
         fll.text_prefix_finder(&|doc| {
-            let title_e = doc
-                .select(&html::parse_select(".anim_title_text > a > h1")?)
-                .next()
-                .ok_or(err_msg(format!("no title found")))?;
-            let title = title_e.text().next().ok_or(err_msg(format!(
-                "no title found, {}",
-                &title_e.inner_html()
-            )))?;
+            let title = html::find_text(doc, ".anim_title_text > a > h1")?;
             Ok(title.to_string())
         });
         fll.set_href_prefix("https://manhua.dmzj.com");
@@ -110,7 +103,7 @@ mod tests {
     fn test_dmzj_fetch_sections() {
         let mut detail = Detail::new("一拳超人", "https://manhua.dmzj.com/yiquanchaoren/");
         Dmzj {}.fetch_sections(&mut detail).unwrap();
-        assert_eq!(376, detail.section_list.len());
+        assert_eq!(377, detail.section_list.len());
     }
 
     #[test]

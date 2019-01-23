@@ -43,8 +43,8 @@ pub const UNKNOWN_NAME: &'static str = "[UNNAMED]";
 impl Platform {
     pub fn new(name: &str, url: &str) -> Self {
         Platform {
-            name: name.to_string(),
-            url: url.to_string(),
+            name: name.to_owned(),
+            url: url.to_owned(),
         }
     }
 }
@@ -72,8 +72,8 @@ impl Detail {
 impl Section {
     pub fn new(name: &str, url: &str) -> Self {
         Section {
-            name: name.to_string(),
-            url: url.to_string(),
+            name: name.to_owned(),
+            url: url.to_owned(),
             page_list: vec![],
         }
     }
@@ -101,17 +101,17 @@ impl Page {
     pub fn new(p: u32, url: &str) -> Self {
         Page {
             p,
-            url: url.to_string(),
-            mime: "image/*".to_string(),
-            extension: "jpg".to_string(),
+            url: url.to_owned(),
+            mime: "image/*".to_owned(),
+            extension: "jpg".to_owned(),
         }
     }
 
     pub fn set_mime(&mut self, mime: &str) {
-        self.mime = mime.to_string();
+        self.mime = mime.to_owned();
     }
 
     pub fn set_extension(&mut self, extension: &str) {
-        self.extension = extension.to_string();
+        self.extension = extension.to_owned();
     }
 }

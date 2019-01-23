@@ -29,14 +29,7 @@ impl Extractor for Mhg {
             LinkListConverter::new(&url, "li > a[class=\"status0\"]", vec![]);
         fll.set_href_prefix("https://www.manhuagui.com")
             .text_prefix_finder(&|doc| {
-                let name = doc
-                    .select(&html::parse_select(".book-title > h1")?)
-                    .next()
-                    .ok_or(err_msg(format!("did not get the name")))?
-                    .text()
-                    .next()
-                    .ok_or(err_msg(format!("did not get the name")))?
-                    .to_string();
+                let name = html::find_text(doc, ".book-title > h1")?.to_string();
                 Ok(name)
             });
         let section_list = fll.try_get_list()?.result()?;
