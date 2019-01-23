@@ -4,6 +4,7 @@ pub mod fcam;
 pub mod gfmh;
 pub mod hhmh;
 pub mod mhg;
+pub mod mhr;
 pub mod mht;
 pub mod prelude;
 
@@ -13,6 +14,7 @@ pub use fcam::*;
 pub use gfmh::*;
 pub use hhmh::*;
 pub use mhg::*;
+pub use mhr::*;
 pub use mht::*;
 
 use crate::errors::*;

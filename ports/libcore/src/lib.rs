@@ -65,6 +65,7 @@ lazy_static! { // Platform list
     static ref FCAM: Platform<'static> = Platform::new("非常爱漫", "http://www.verydm.com");
     static ref GFMH: Platform<'static> = Platform::new("古风漫画网", "http://www.gufengmh.com");
     static ref MHT: Platform<'static> = Platform::new("漫画台", "https://www.manhuatai.com");
+    static ref MHR: Platform<'static> = Platform::new("漫画人", "http://www.manhuaren.com");
 }
 
 lazy_static! { // Detail url matches
@@ -75,6 +76,7 @@ lazy_static! { // Detail url matches
     static ref RE_DETAIL_FCAM: Regex = build_regex(r#"https?://www\.verydm\.com/manhua/[^/]+"#);
     static ref RE_DETAIL_GFMH: Regex = build_regex(r#"https?://www\.gufengmh\.com/manhua/[^/]+/$"#);
     static ref RE_DETAIL_MHT: Regex = build_regex(r#"https?://www\.manhuatai\.com/[^/]+/$"#);
+    static ref RE_DETAIL_MHR: Regex = build_regex(r#"https?://www\.manhuaren\.com/[^/]+/$"#);
 }
 
 lazy_static! { // Section url matches
@@ -85,6 +87,7 @@ lazy_static! { // Section url matches
     static ref RE_SECTION_FCAM: Regex = build_regex(r#"https?://www\.verydm\.com/chapter\.php\?id=\d+"#);
     static ref RE_SECTION_GFMH: Regex = build_regex(r#"https?://www\.gufengmh\.com/manhua/.+/\d+\.html"#);
     static ref RE_SECTION_MHT: Regex = build_regex(r#"https?://www\.manhuatai\.com/[^/]+/\d+\.html"#);
+    static ref RE_SECTION_MHR: Regex = build_regex(r#"https?://www\.manhuaren\.com/m\d+/"#);
 }
 
 lazy_static! { // Extractor list
@@ -95,6 +98,7 @@ lazy_static! { // Extractor list
     static ref EXTRACTOR_FCAM: &'static (Extractor + Sync) = &extractors::Fcam {} as &(Extractor + Sync);
     static ref EXTRACTOR_GFMH: &'static (Extractor + Sync) = &extractors::Gfmh {} as &(Extractor + Sync);
     static ref EXTRACTOR_MHT: &'static (Extractor + Sync) = &extractors::Mht {} as &(Extractor + Sync);
+    static ref EXTRACTOR_MHR: &'static (Extractor + Sync) = &extractors::Mhr {} as &(Extractor + Sync);
 }
 
 lazy_static! { // Matches
@@ -106,6 +110,7 @@ lazy_static! { // Matches
         (&RE_SECTION_FCAM, *EXTRACTOR_FCAM, *FCAM),
         (&RE_SECTION_GFMH, *EXTRACTOR_GFMH, *GFMH),
         (&RE_SECTION_MHT, *EXTRACTOR_MHT, *MHT),
+        (&RE_SECTION_MHR, *EXTRACTOR_MHR, *MHR),
     ];
     pub static ref DETAIL_MATCHES: Vec<(&'static Regex, &'static (Extractor + Sync), Platform<'static>)> = vec![
         (&RE_DETAIL_DMZJ, *EXTRACTOR_DMZJ, *DMZJ),
@@ -115,5 +120,6 @@ lazy_static! { // Matches
         (&RE_DETAIL_FCAM, *EXTRACTOR_FCAM, *FCAM),
         (&RE_DETAIL_GFMH, *EXTRACTOR_GFMH, *GFMH),
         (&RE_DETAIL_MHT, *EXTRACTOR_MHT, *MHT),
+        (&RE_DETAIL_MHR, *EXTRACTOR_MHR, *MHR),
     ];
 }

@@ -40,7 +40,7 @@ Smaller, faster and less dependent [manga](https://github.com/Hentioe/manga).
   - [x] www.hhmmoo.com (汗汗漫画)
   - [ ] comic.kukudm.com (KuKu动漫)
   - [x] www.manhuagui.com (漫画柜)
-  - [ ] www.manhuaren.com (漫画人)
+  - [x] www.manhuaren.com (漫画人)
   - [x] www.manhuatai.com (漫画台)
   - [x] www.verydm.com (非常爱漫)
   - [ ] www.177mh.net (新新漫画网)
