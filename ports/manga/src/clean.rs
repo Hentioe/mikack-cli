@@ -33,6 +33,6 @@ fn find_all_cache_dir() -> Result<Vec<String>> {
         .filter(|p| p.exists())
         .map(|p| p.clone())
         .filter(|p| p.to_str().is_some())
-        .map(|p| p.to_str().unwrap().to_string())
+        .map(|p| p.to_str().unwrap().to_owned())
         .collect())
 }

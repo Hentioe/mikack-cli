@@ -31,19 +31,19 @@ fn main() -> Result<()> {
         clean::delete_cache()?;
     } else if matches.value_of("url").is_some() {
         let url = matches.value_of("url").unwrap();
-        analysis_url(url, output_dir, formats)?;
+        analysis_url(url, output_dir, &formats)?;
     } else {
         println!(
             "Welcome to manga ({})! There are huge manga resources available for direct save.",
             &manga::VERSION
         );
         println!("Also, any ideas or problems can be discussed at https://github.com/Hentioe/manga-rs/issues.");
-        from_source_list(output_dir, formats)?;
+        from_source_list(output_dir, &formats)?;
     }
     Ok(())
 }
 
-fn from_source_list(output_dir: &str, formats: Vec<&Format>) -> Result<()> {
+fn from_source_list(output_dir: &str, formats: &[&Format]) -> Result<()> {
     println!("They are our source of resources:");
     let source_list = &libcore::DETAIL_MATCHES;
     for (i, (_r, _f, p)) in source_list.iter().enumerate() {
@@ -85,7 +85,7 @@ fn from_source_list(output_dir: &str, formats: Vec<&Format>) -> Result<()> {
     Ok(())
 }
 
-fn analysis_url(url: &str, output_dir: &str, formats: Vec<&Format>) -> Result<()> {
+fn analysis_url(url: &str, output_dir: &str, formats: &[&Format]) -> Result<()> {
     debug!("analysis url: {}", &url);
     let section_matches = &libcore::SECTION_MATCHES;
     let mut passed = false;
@@ -172,7 +172,7 @@ fn save(
     extractor: &Extractor,
     platform: &Platform,
     output_dir: &str,
-    formats: &Vec<&Format>,
+    formats: &[&Format],
 ) -> Result<()> {
     let mut section = Section::new(UNKNOWN_NAME, url);
 
