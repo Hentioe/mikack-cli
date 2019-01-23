@@ -1,4 +1,8 @@
+mod clean;
+mod formats;
+
 use console::{style, Emoji};
+use formats::*;
 use libcore::{
     errors::*,
     exporters::{prelude::*, *},
@@ -8,8 +12,6 @@ use libcore::{
 use log::debug;
 use manga::cli;
 use std::io::prelude::*;
-
-mod clean;
 
 static LOOKING_GLASS: Emoji = Emoji("🔍  ", "");
 static TRUCK: Emoji = Emoji("🚚  ", "");
@@ -41,7 +43,7 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-fn from_source_list(output_dir: &str, formats: Vec<OutputFormat>) -> Result<()> {
+fn from_source_list(output_dir: &str, formats: Vec<&Format>) -> Result<()> {
     println!("They are our source of resources:");
     let source_list = &libcore::DETAIL_MATCHES;
     for (i, (_r, _f, p)) in source_list.iter().enumerate() {
@@ -83,7 +85,7 @@ fn from_source_list(output_dir: &str, formats: Vec<OutputFormat>) -> Result<()> 
     Ok(())
 }
 
-fn analysis_url(url: &str, output_dir: &str, formats: Vec<OutputFormat>) -> Result<()> {
+fn analysis_url(url: &str, output_dir: &str, formats: Vec<&Format>) -> Result<()> {
     debug!("analysis url: {}", &url);
     let section_matches = &libcore::SECTION_MATCHES;
     let mut passed = false;
@@ -170,7 +172,7 @@ fn save(
     extractor: &Extractor,
     platform: &Platform,
     output_dir: &str,
-    formats: &Vec<OutputFormat>,
+    formats: &Vec<&Format>,
 ) -> Result<()> {
     let mut section = Section::new(UNKNOWN_NAME, url);
 
@@ -190,18 +192,10 @@ fn save(
             f.to_string()
         );
         let path = match f {
-            OutputFormat::Epub => {
-                epub::Epub::new(platform.clone(), section.clone()).save(output_dir)?
-            }
-            OutputFormat::Pdf => {
-                pdf::Pdf::new(platform.clone(), section.clone()).save(output_dir)?
-            }
-            OutputFormat::Mobi => {
-                mobi::Mobi::new(platform.clone(), section.clone()).save(output_dir)?
-            }
-            OutputFormat::Azw3 => {
-                azw3::Azw3::new(platform.clone(), section.clone()).save(output_dir)?
-            }
+            Format::Epub => epub::Epub::new(platform.clone(), section.clone()).save(output_dir)?,
+            Format::Pdf => pdf::Pdf::new(platform.clone(), section.clone()).save(output_dir)?,
+            Format::Mobi => mobi::Mobi::new(platform.clone(), section.clone()).save(output_dir)?,
+            Format::Azw3 => azw3::Azw3::new(platform.clone(), section.clone()).save(output_dir)?,
         };
         succeed_list.push(format!("Succeed: {}", &path));
     }
@@ -255,46 +249,11 @@ fn parse_section_list(input_s: &str) -> Vec<i32> {
         .collect()
 }
 
-enum OutputFormat {
-    Epub,
-    Pdf,
-    Azw3,
-    Mobi,
-}
-
-impl ToString for OutputFormat {
-    fn to_string(&self) -> std::string::String {
-        match self {
-            OutputFormat::Epub => "epub".to_owned(),
-            OutputFormat::Pdf => "pdf".to_owned(),
-            OutputFormat::Azw3 => "azw3".to_owned(),
-            OutputFormat::Mobi => "mobi".to_owned(),
-        }
-    }
-}
-
-impl OutputFormat {
-    fn find(format_s: &str) -> Result<OutputFormat> {
-        let format_s = format_s.trim();
-        if format_s == "epub" {
-            Ok(OutputFormat::Epub)
-        } else if format_s == "pdf" {
-            Ok(OutputFormat::Pdf)
-        } else if format_s == "mobi" {
-            Ok(OutputFormat::Mobi)
-        } else if format_s == "azw3" {
-            Ok(OutputFormat::Azw3)
-        } else {
-            Err(err_msg(format!("unsupported format: {}", format_s)))
-        }
-    }
-}
-
-fn parse_formats(formats: &str) -> Result<Vec<OutputFormat>> {
+fn parse_formats(formats: &str) -> Result<Vec<&Format>> {
     let re = regex::Regex::new("(,|，)").unwrap();
-    let mut list: Vec<OutputFormat> = vec![];
+    let mut list: Vec<&Format> = vec![];
     for f in re.split(formats).collect::<Vec<&str>>() {
-        list.push(OutputFormat::find(f)?)
+        list.push(Format::find(f).ok_or(err_msg(format!("unsupported format '{}'", f)))?)
     }
     Ok(list)
 }
