@@ -21,7 +21,7 @@ fn main() -> Result<()> {
     let matches = cli::build_cli().get_matches();
     let formats = parse_formats(
         matches
-            .value_of("output-formats")
+            .value_of("output-format(s)")
             .ok_or(err_msg("missing 'formats' parameter"))?,
     )?;
     let output_dir = matches
