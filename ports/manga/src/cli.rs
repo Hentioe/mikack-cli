@@ -23,7 +23,7 @@ pub fn build_cli() -> App<'static, 'static> {
                 .required(false),
         )
         .arg(
-            Arg::with_name("output-formats")
+            Arg::with_name("output-format(s)")
                 .long("format")
                 .short("f")
                 .help("Saved format (eg: epub,mobi,azw3,pdf)")
@@ -34,7 +34,7 @@ pub fn build_cli() -> App<'static, 'static> {
         .subcommand(
             App::new("clean")
                 .version(VERSION)
-                .about("Empty the cache (the structure directory of epub)")
+                .about("Delete all .cache directories")
                 .author(AUTHOR),
         )
 }
