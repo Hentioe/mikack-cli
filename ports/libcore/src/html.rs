@@ -45,6 +45,10 @@ pub fn find_attr<'a>(doc: &'a Html, selectors: &str, attr: &str) -> Result<&'a s
         )))
 }
 
+pub fn count(doc: &Html, selectors: &str) -> Result<usize> {
+    Ok(doc.select(&parse_select(selectors)?).count())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

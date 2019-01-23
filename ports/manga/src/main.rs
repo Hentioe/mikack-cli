@@ -140,7 +140,7 @@ fn analysis_url(url: &str, output_dir: &str, formats: &[&Format]) -> Result<()> 
                         match save(&sec.url, *fr, p, output_dir, &formats) {
                             Ok(_) => {}
                             Err(e) => {
-                                println!("{:?}", e);
+                                println!("{}", e.to_string());
                                 failed_count = failed_count + 1;
                             }
                         }

@@ -42,7 +42,7 @@ Smaller, faster and less dependent [manga](https://github.com/Hentioe/manga).
   - [x] www.manhuagui.com (漫画柜)
   - [ ] www.manhuaren.com (漫画人)
   - [ ] www.manhuatai.com (漫画台)
-  - [ ] www.verydm.com (非常爱漫)
+  - [x] www.verydm.com (非常爱漫)
   - [ ] www.177mh.net (新新漫画网)
 - [x] 其它
   - [x] 清理缓存资源

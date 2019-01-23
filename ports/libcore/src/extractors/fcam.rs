@@ -1,5 +1,5 @@
 use super::{prelude::*, *};
-use crate::{errors::*, html, http, jsrt, models::*};
+use crate::{errors::*, html, http, models::*};
 use lazy_static::lazy_static;
 use regex::Regex;
 
@@ -39,18 +39,40 @@ impl Extractor for Fcam {
             http::Result::Ok(html_s) => {
                 let doc = &html::parse_document(&html_s);
                 let url = html::find_attr(doc, ".main[style=\"display:block\"] > img", "src")?;
-                let caps = RE_PREFIX_SUFFIX
-                    .captures(&html_s)
-                    .ok_or(err_msg("did not match prefix or suffix"))?;
-                let prefix = caps
+                let caps = RE_URL
+                    .captures(url)
+                    .ok_or(err_msg("did not match url path or file format"))?;
+                let path = caps
                     .get(1)
-                    .ok_or(err_msg(format!("no prefix found, {}", &section.url)))?
+                    .ok_or(err_msg(format!("no path found, {}", url)))?
                     .as_str();
-                let suffix = caps
+                let format = caps
                     .get(2)
-                    .ok_or(err_msg(format!("no suffix found, {}", &section.url)))?
+                    .ok_or(err_msg(format!("no format found, {}", url)))?
                     .as_str();
-                //                println!("{},{}", prefix, suffix);
+                let count = html::count(doc, "select > option")?;
+                for i in 1..count + 1 {
+                    let n = if i < 10 {
+                        format!("00{}", i)
+                    } else if i < 100 {
+                        format!("0{}", i)
+                    } else {
+                        i.to_string()
+                    };
+                    section.add_page(Page::new(
+                        (i - 1) as u32,
+                        &format!("{}/{}.{}", path, &n, format),
+                    ));
+                }
+                if !section.has_name() {
+                    let keywords = html::find_attr(doc, "meta[name=\"keywords\"]", "content")?;
+                    section.name = keywords
+                        .split("，")
+                        .collect::<Vec<&str>>()
+                        .get(0)
+                        .ok_or(err_msg(format!("no name found in keywords, {}", keywords)))?
+                        .to_string();
+                }
                 Ok(())
             }
             http::Result::Err(e) => Err(e),
@@ -59,7 +81,7 @@ impl Extractor for Fcam {
 }
 
 lazy_static! {
-    static ref RE_PREFIX_SUFFIX: Regex = Regex::new(r#"^(.+)/\d{3,}.([^/]+)$"#).unwrap();
+    static ref RE_URL: Regex = Regex::new(r#"(.+)/\d+\.(jpg|png|jpeg)"#).unwrap();
 }
 
 #[cfg(test)]
@@ -79,17 +101,16 @@ mod tests {
             "http://www.verydm.com/manhua/niluohenver",
         );
         Fcam {}.fetch_sections(&mut detail).unwrap();
-        println!("{:?}", detail.section_list);
         assert_eq!(69, detail.section_list.len());
     }
 
-    //    #[test]
-    //    fn test_fcam_fetch_pages() {
-    //        let mut section = Section::new(
-    //            "火影忍者 第700话",
-    //            "http://www.verydm.com/chapter.php?id=48141",
-    //        );
-    //        Fcam {}.fetch_pages(&mut section).unwrap();
-    //        assert_eq!(21, section.page_list.len());
-    //    }
+    #[test]
+    fn test_fcam_fetch_pages() {
+        let mut section = Section::new(
+            "火影忍者 第700话",
+            "http://www.verydm.com/chapter.php?id=48141",
+        );
+        Fcam {}.fetch_pages(&mut section).unwrap();
+        assert_eq!(25, section.page_list.len());
+    }
 }
