@@ -43,7 +43,7 @@ Smaller, faster and less dependent [manga](https://github.com/Hentioe/manga).
   - [x] www.manhuaren.com (漫画人)
   - [x] www.manhuatai.com (漫画台)
   - [x] www.verydm.com (非常爱漫)
-  - [ ] www.177mh.net (新新漫画网)
+  - [x] www.177mh.net (新新漫画网)
 - [x] 其它
   - [x] 清理缓存资源
   - [x] 指定输出目录

@@ -7,6 +7,7 @@ pub mod mhg;
 pub mod mhr;
 pub mod mht;
 pub mod prelude;
+pub mod xxmh;
 
 pub use dmk::*;
 pub use dmzj::*;
@@ -16,6 +17,7 @@ pub use hhmh::*;
 pub use mhg::*;
 pub use mhr::*;
 pub use mht::*;
+pub use xxmh::*;
 
 use crate::errors::*;
 use encoding_rs::Encoding;

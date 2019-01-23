@@ -701,7 +701,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "manga"
-version = "0.4.5"
+version = "0.4.6-dev"
 dependencies = [
  "clap 2.32.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "console 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",
