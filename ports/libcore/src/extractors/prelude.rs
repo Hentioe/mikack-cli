@@ -58,14 +58,14 @@ where
                         element
                             .text()
                             .next()
-                            .ok_or(err_msg(format!("no text found, {}", element.inner_html())))?
+                            .ok_or(err_msg(format!("no text found based on selector '{}'", self.selector)))?
                     };
                     let href = element
                         .value()
                         .attr("href")
-                        .ok_or(err_msg(format!("no href found, {}", element.inner_html())))?;
+                        .ok_or(err_msg(format!("no href found based on selector '{}'", self.selector)))?;
                     let data = T::from(
-                        &format!("{}{}", prefix, text),
+                        &format!("{}{}", prefix, text).trim(),
                         &format!("{}{}", self.href_prefix, href),
                     );
                     self.list.push(data);

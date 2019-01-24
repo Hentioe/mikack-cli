@@ -1,3 +1,4 @@
+pub mod dm5;
 pub mod dmk;
 pub mod dmzj;
 pub mod fcam;
@@ -9,6 +10,7 @@ pub mod mht;
 pub mod prelude;
 pub mod xxmh;
 
+pub use dm5::*;
 pub use dmk::*;
 pub use dmzj::*;
 pub use fcam::*;

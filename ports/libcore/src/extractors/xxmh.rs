@@ -23,7 +23,7 @@ impl Extractor for Xxmh {
     fn fetch_sections(&self, detail: &mut Detail) -> Result<()> {
         let url = &detail.url;
         let mut fll: LinkListConverter<Section> =
-            LinkListConverter::new(&url, "ul.ar_rlos_bor.ar_list_col > li > a", vec![]);
+            LinkListConverter::new(&url, "ul.ar_list_col > li > a", vec![]);
         fll.set_href_prefix("https://www.177mh.net")
             .text_prefix_finder(&|doc| {
                 let name = html::find_text(doc, ".ar_list_coc > li > h1")?.to_string();
