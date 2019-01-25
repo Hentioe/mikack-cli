@@ -32,6 +32,7 @@ fn main() -> Result<()> {
     } else if matches.value_of("url").is_some() {
         let url = matches.value_of("url").unwrap();
         analysis_url(url, output_dir, &formats)?;
+        waiting_for_confirmation()?;
     } else {
         println!(
             "Welcome to manga ({})! There are huge manga resources available for direct save.",
@@ -39,6 +40,7 @@ fn main() -> Result<()> {
         );
         println!("Also, any ideas or problems can be discussed at https://github.com/Hentioe/manga-rs/issues.");
         from_source_list(output_dir, &formats)?;
+        waiting_for_confirmation()?;
     }
     Ok(())
 }
@@ -204,6 +206,19 @@ fn save(
     for succeed in succeed_list {
         println!("{}", succeed);
     }
+    Ok(())
+}
+
+#[cfg(target_os = "windows")]
+fn waiting_for_confirmation() -> Result<()> {
+    print!("\n[-/-] Waiting exit... (↵)");
+    std::io::stdout().flush()?;
+    std::io::stdin().read_line(&mut String::new())?;
+    Ok(())
+}
+
+#[cfg(any(not(windows)))]
+fn waiting_for_confirmation() -> Result<()> {
     Ok(())
 }
 
