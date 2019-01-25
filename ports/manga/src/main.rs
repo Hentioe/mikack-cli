@@ -1,6 +1,7 @@
 mod clean;
 mod formats;
 
+use colored::*;
 use console::{style, Emoji};
 use formats::*;
 use libcore::{
@@ -17,6 +18,13 @@ static LOOKING_GLASS: Emoji = Emoji("🔍  ", "");
 static TRUCK: Emoji = Emoji("🚚  ", "");
 
 fn main() -> Result<()> {
+    if let Err(e) = action() {
+        eprintln!("{}", e.to_string().red());
+    }
+    Ok(waiting_for_confirmation()?)
+}
+
+fn action() -> Result<()> {
     env_logger::init();
     let matches = cli::build_cli().get_matches();
     let formats = parse_formats(
@@ -32,7 +40,6 @@ fn main() -> Result<()> {
     } else if matches.value_of("url").is_some() {
         let url = matches.value_of("url").unwrap();
         analysis_url(url, output_dir, &formats)?;
-        waiting_for_confirmation()?;
     } else {
         println!(
             "Welcome to manga ({})! There are huge manga resources available for direct save.",
@@ -45,7 +52,6 @@ fn main() -> Result<()> {
                 from_source_list(output_dir, &formats)?;
             }
         }
-        waiting_for_confirmation()?;
     }
     Ok(())
 }
@@ -147,7 +153,7 @@ fn analysis_url(url: &str, output_dir: &str, formats: &[&Format]) -> Result<()> 
                         match save(&sec.url, *fr, p, output_dir, &formats) {
                             Ok(_) => {}
                             Err(e) => {
-                                println!("{}", e.to_string());
+                                eprintln!("{}", e.to_string().red());
                                 failed_count = failed_count + 1;
                             }
                         }
@@ -249,7 +255,7 @@ fn select_mode() -> Result<UsageMode> {
 
 #[cfg(target_os = "windows")]
 fn waiting_for_confirmation() -> Result<()> {
-    print!("\n[-/-] Waiting exit... (Enter key to confirm)");
+    print!("[-/-] Waiting exit... (Enter key to confirm)");
     std::io::stdout().flush()?;
     std::io::stdin().read_line(&mut String::new())?;
     Ok(())
