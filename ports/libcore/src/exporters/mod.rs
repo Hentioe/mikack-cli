@@ -3,6 +3,7 @@ pub mod epub;
 pub mod mobi;
 pub mod pdf;
 pub mod prelude;
+pub mod zip;
 
 use crate::{check, errors::*, models::*};
 

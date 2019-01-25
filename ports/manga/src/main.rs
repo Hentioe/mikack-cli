@@ -196,6 +196,7 @@ fn save(
             Format::Pdf => pdf::Pdf::new(*platform, section.clone()).save(output_dir)?,
             Format::Mobi => mobi::Mobi::new(*platform, section.clone()).save(output_dir)?,
             Format::Azw3 => azw3::Azw3::new(*platform, section.clone()).save(output_dir)?,
+            Format::Zip => { zip::Zip::new(section.clone()).save(output_dir) }?,
         };
         succeed_list.push(format!("Succeed: {}", &path));
     }
