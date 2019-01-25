@@ -38,8 +38,13 @@ fn main() -> Result<()> {
             "Welcome to manga ({})! There are huge manga resources available for direct save.",
             &manga::VERSION
         );
-        println!("Also, any ideas or problems can be discussed at https://github.com/Hentioe/manga-rs/issues.");
-        from_source_list(output_dir, &formats)?;
+        match select_mode()? {
+            UsageMode::CustomUrl(url) => analysis_url(&url, output_dir, &formats)?,
+            UsageMode::PlatformSelect => {
+                println!("Also, any ideas or problems can be discussed at https://github.com/Hentioe/manga-rs/issues.");
+                from_source_list(output_dir, &formats)?;
+            }
+        }
         waiting_for_confirmation()?;
     }
     Ok(())
@@ -209,9 +214,42 @@ fn save(
     Ok(())
 }
 
+enum UsageMode {
+    PlatformSelect,
+    CustomUrl(String),
+}
+
+#[cfg(target_os = "windows")]
+fn select_mode() -> Result<UsageMode> {
+    println!("1. Custom url");
+    println!("2. Platform select");
+    println!("==> Select the usage mode (e.g: 1)");
+    print!("==> ");
+    std::io::stdout().flush()?;
+    let mut input = String::new();
+    std::io::stdin().read_line(&mut input)?;
+    match input.trim().parse::<usize>()? {
+        1 => {
+            println!("==> Give me a URL (e.g: https://manhua.dmzj.com/yiquanchaoren/)");
+            print!("==> ");
+            std::io::stdout().flush()?;
+            let mut input = String::new();
+            std::io::stdin().read_line(&mut input)?;
+            Ok(UsageMode::CustomUrl(input.trim().to_owned()))
+        }
+        2 => Ok(UsageMode::PlatformSelect),
+        _ => Err(err_msg("invalid mode selection")),
+    }
+}
+
+#[cfg(any(not(windows)))]
+fn select_mode() -> Result<UsageMode> {
+    Ok(UsageMode::SelectPlatform)
+}
+
 #[cfg(target_os = "windows")]
 fn waiting_for_confirmation() -> Result<()> {
-    print!("\n[-/-] Waiting exit... (↵)");
+    print!("\n[-/-] Waiting exit... (Enter key to confirm)");
     std::io::stdout().flush()?;
     std::io::stdin().read_line(&mut String::new())?;
     Ok(())
