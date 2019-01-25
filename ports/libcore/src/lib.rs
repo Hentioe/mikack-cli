@@ -1,7 +1,6 @@
 #![feature(fn_traits)]
 
-pub mod archive;
-pub mod check;
+pub mod checker;
 pub mod errors;
 pub mod exporters;
 pub mod extractors;

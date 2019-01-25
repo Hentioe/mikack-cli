@@ -1,7 +1,10 @@
-use super::epub::*;
+use super::{epub::*, zip::*};
 use crate::errors::*;
-use crate::{archive, storage};
-use std::{fs::File, io::prelude::*, path::PathBuf};
+use crate::storage;
+use scan_dir::ScanDir;
+use std::io::prelude::*;
+use std::{fs::File, path::PathBuf};
+use zip::{write::FileOptions, ZipWriter};
 
 pub trait Exporter {
     fn save(&mut self, output_dir: &str) -> Result<String>;
@@ -70,7 +73,55 @@ impl<'a> Epub<'a> {
         container.write_all(self.render_container_xml().as_bytes())?;
 
         // 打包成 epub
-        archive::doit(&cache_epub_dir, &cache_file)?;
+        Zip::archive_dir(&cache_epub_dir, &cache_file)?;
+        Ok(())
+    }
+}
+
+impl Zip {
+    pub fn archive_dir(dir: &str, dst: &str) -> Result<()> {
+        let file = std::fs::File::create(dst).unwrap();
+        let mut zip_f = ZipWriter::new(file);
+        let options = FileOptions::default()
+            .compression_method(zip::CompressionMethod::Deflated)
+            .unix_permissions(0o755);
+        Self::archive(dir, &mut Vec::new(), &mut zip_f, &options, "")?;
+        zip_f.finish()?;
+        Ok(())
+    }
+
+    fn archive(
+        dir: &str,
+        mut buffer: &mut Vec<u8>,
+        mut zip_f: &mut ZipWriter<File>,
+        options: &FileOptions,
+        parent_dir: &str,
+    ) -> Result<()> {
+        ScanDir::all().read(dir, |iter| {
+            for (entry, name) in iter {
+                if entry.path().is_file() {
+                    zip_f
+                        .start_file(format!("{}{}", parent_dir, name), *options)
+                        .unwrap();
+                    let mut f = File::open(entry.path().to_str().unwrap()).unwrap();
+                    f.read_to_end(&mut buffer).unwrap();
+                    zip_f.write_all(&*buffer).unwrap();
+                    buffer.clear();
+                } else {
+                    zip_f
+                        .add_directory(format!("{}{}/", parent_dir, name), FileOptions::default())
+                        .unwrap();
+                    Self::archive(
+                        entry.path().to_str().unwrap(),
+                        &mut buffer,
+                        &mut zip_f,
+                        options,
+                        &format!("{}{}/", parent_dir, name),
+                    )
+                    .unwrap();
+                }
+            }
+        })?;
         Ok(())
     }
 }

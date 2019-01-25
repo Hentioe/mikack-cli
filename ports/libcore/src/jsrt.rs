@@ -1,4 +1,4 @@
-use crate::{check, errors::*};
+use crate::{checker, errors::*};
 use std::process::Command;
 
 pub fn read_output(code: &str) -> Result<String> {
@@ -17,7 +17,7 @@ pub fn read_output(code: &str) -> Result<String> {
 }
 
 fn check_node() -> bool {
-    check::exec_succeed("node", &["-v"])
+    checker::exec_succeed("node", &["-v"])
 }
 
 #[cfg(test)]

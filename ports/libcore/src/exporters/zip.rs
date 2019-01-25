@@ -1,5 +1,5 @@
 use super::{prelude::*, *};
-use crate::{archive, get_origin_path, storage};
+use crate::{get_origin_path, storage};
 
 pub struct Zip {
     pub section: Section,
@@ -20,7 +20,7 @@ impl Exporter for Zip {
         let origin_dir = get_origin_path(&self.section.name)?;
         let dst_file = format!("{}/{}.zip", &output_dir, &self.section.name);
         // 使用原始图片目录产生压缩包
-        archive::doit(&origin_dir, &dst_file)?;
+        Self::archive_dir(&origin_dir, &dst_file)?;
         Ok(dst_file)
     }
 }

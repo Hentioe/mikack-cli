@@ -5,13 +5,13 @@ pub mod pdf;
 pub mod prelude;
 pub mod zip;
 
-use crate::{check, errors::*, models::*};
+use crate::{checker, errors::*, models::*};
 
 use std::process::{Command, Stdio};
 
 pub fn book_convert(src: &str, dst: &str) -> Result<()> {
     let program = "ebook-convert";
-    if !check::exec_succeed(program, &["--version"]) {
+    if !checker::exec_succeed(program, &["--version"]) {
         return Err(err_msg(
             "please install Calibre: https://calibre-ebook.com/download",
         ));
