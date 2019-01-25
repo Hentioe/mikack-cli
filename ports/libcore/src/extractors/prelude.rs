@@ -55,15 +55,15 @@ where
                         let selectors = self.text_in_dom.as_ref().unwrap();
                         html::find_text_in_element(&element, selectors)?
                     } else {
-                        element
-                            .text()
-                            .next()
-                            .ok_or(err_msg(format!("no text found based on selector '{}'", self.selector)))?
+                        element.text().next().ok_or(err_msg(format!(
+                            "no text found based on selector '{}'",
+                            self.selector
+                        )))?
                     };
-                    let href = element
-                        .value()
-                        .attr("href")
-                        .ok_or(err_msg(format!("no href found based on selector '{}'", self.selector)))?;
+                    let href = element.value().attr("href").ok_or(err_msg(format!(
+                        "no href found based on selector '{}'",
+                        self.selector
+                    )))?;
                     let data = T::from(
                         &format!("{}{}", prefix, text).trim(),
                         &format!("{}{}", self.href_prefix, href),

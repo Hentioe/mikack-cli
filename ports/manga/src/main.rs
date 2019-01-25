@@ -45,7 +45,7 @@ fn main() -> Result<()> {
 
 fn from_source_list(output_dir: &str, formats: &[&Format]) -> Result<()> {
     println!("They are our source of resources:");
-    let source_list = &libcore::DETAIL_MATCHES;
+    let source_list = &libcore::MATCHES.0;
     for (i, (_r, _f, p)) in source_list.iter().enumerate() {
         println!("{}. {}", i + 1, p.name)
     }
@@ -87,7 +87,7 @@ fn from_source_list(output_dir: &str, formats: &[&Format]) -> Result<()> {
 
 fn analysis_url(url: &str, output_dir: &str, formats: &[&Format]) -> Result<()> {
     debug!("analysis url: {}", &url);
-    let section_matches = &libcore::SECTION_MATCHES;
+    let section_matches = &libcore::MATCHES.1;
     let mut passed = false;
     for (re, fr, p) in section_matches.iter() {
         if re.find(&url).is_none() {
@@ -100,7 +100,7 @@ fn analysis_url(url: &str, output_dir: &str, formats: &[&Format]) -> Result<()> 
     }
     if !passed {
         // 作为 Detail url 继续检测
-        let detail_matches = &libcore::DETAIL_MATCHES;
+        let detail_matches = &libcore::MATCHES.0;
 
         for (re, fr, p) in detail_matches.iter() {
             if re.find(&url).is_none() {
