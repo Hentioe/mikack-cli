@@ -96,8 +96,8 @@ mod tests {
     #[test]
     fn test_xxmh_fetch_sections() {
         let mut detail = Detail::new(
-            "怪盗无限面相",
-            "https://www.177mh.net/colist_242775.html",
+            "拳愿奥米迦",
+            "https://www.177mh.net/colist_242774.html",
         );
         Xxmh {}.fetch_sections(&mut detail).unwrap();
         assert_eq!(1, detail.section_list.len());
