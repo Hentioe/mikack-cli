@@ -88,7 +88,7 @@ lazy_static! { // Source list
         ),
         (
             r#"https?://www\.hhmmoo\.com/manhua\d+\.html"#,
-            r#"^https?://www\.hhmmoo\.com/page\d+/\d+\.html$"#,
+            r#"^https?://www\.hhmmoo\.com/page\d+/\d+\.html"#,
             extractors::Hhmh,
             "汗汗漫画", "http://www.hhmmoo.com"
         ),

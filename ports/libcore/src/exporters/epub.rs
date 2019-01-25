@@ -34,7 +34,7 @@ impl<'a> Epub<'a> {
       <p>
          来源于：<a href="{{ platform_url }}">{{ platform_name }}</a>
       </p>
-      <p>操作人：{{ operator }}({{ version }})</p>
+      <p>操作人：{{ operator }} ({{ version }})</p>
       <hr />
       <p>
          本图书由开源项目:
