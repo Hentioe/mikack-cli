@@ -220,6 +220,7 @@ fn save(
     Ok(())
 }
 
+#[allow(dead_code)]
 enum UsageMode {
     PlatformSelect,
     CustomUrl(String),
