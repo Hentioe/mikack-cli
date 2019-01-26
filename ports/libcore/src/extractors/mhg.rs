@@ -119,7 +119,7 @@ mod tests {
     fn test_mhg_fetch_sections() {
         let mut detail = Detail::new("七大罪", "https://www.manhuagui.com/comic/7708/");
         Mhg {}.fetch_sections(&mut detail).unwrap();
-        assert_eq!(293, detail.section_list.len());
+        assert_eq!(294, detail.section_list.len());
     }
 
     #[test]

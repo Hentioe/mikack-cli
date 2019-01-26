@@ -1,6 +1,7 @@
 pub mod dm5;
 pub mod dmk;
 pub mod dmzj;
+pub mod ehentai;
 pub mod fcam;
 pub mod gfmh;
 pub mod hhmh;
@@ -13,6 +14,7 @@ pub mod xxmh;
 pub use dm5::*;
 pub use dmk::*;
 pub use dmzj::*;
+pub use ehentai::*;
 pub use fcam::*;
 pub use gfmh::*;
 pub use hhmh::*;

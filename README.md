@@ -117,6 +117,7 @@ English Version:
   * [x] www.manhuatai.com (漫画台)
   * [x] www.verydm.com (非常爱漫)
   * [x] www.177mh.net (新新漫画网)
+  * [x] e-hentai.org (E-Hentai)
 * [x] 其它
   * [x] 清理缓存资源
   * [x] 指定输出目录

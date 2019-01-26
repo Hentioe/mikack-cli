@@ -60,6 +60,18 @@ pub fn find_attr<'a>(doc: &'a Html, selectors: &str, attr: &str) -> Result<&'a s
         )))
 }
 
+pub fn find_list_attr<'a>(doc: &'a Html, selectors: &str, attr: &str) -> Result<Vec<&'a str>> {
+    let mut attr_list: Vec<&str> = vec![];
+    for elem in doc.select(&parse_select(selectors)?) {
+        let attr = elem.value().attr(attr).ok_or(err_msg(format!(
+            "no '{}' found based on selector ‘{}’",
+            attr, selectors
+        )))?;
+        attr_list.push(attr);
+    }
+    Ok(attr_list)
+}
+
 pub fn count(doc: &Html, selectors: &str) -> Result<usize> {
     Ok(doc.select(&parse_select(selectors)?).count())
 }
