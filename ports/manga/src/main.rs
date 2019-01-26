@@ -250,7 +250,7 @@ fn select_mode() -> Result<UsageMode> {
 
 #[cfg(any(not(windows)))]
 fn select_mode() -> Result<UsageMode> {
-    Ok(UsageMode::SelectPlatform)
+    Ok(UsageMode::PlatformSelect)
 }
 
 #[cfg(target_os = "windows")]
