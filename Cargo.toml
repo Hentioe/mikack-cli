@@ -3,3 +3,6 @@ members = [
     "ports/libcore",
     "ports/manga"
 ]
+
+[profile.release]
+lto = true
