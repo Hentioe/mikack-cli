@@ -112,9 +112,12 @@ mod tests {
 
     #[test]
     fn test_dm5_fetch_sections() {
-        let mut detail = Detail::new("一拳超人", "http://www.dm5.com/manhua-yiquanchaoren/");
+        let mut detail = Detail::new(
+            "灵能百分百",
+            "http://www.dm5.com/manhua-lingnengbaifenbai/",
+        );
         Dm5 {}.fetch_sections(&mut detail).unwrap();
-        assert_eq!(350, detail.section_list.len());
+        assert_eq!(282, detail.section_list.len());
     }
 
     //        #[test]
