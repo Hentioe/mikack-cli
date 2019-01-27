@@ -106,12 +106,9 @@ English Version:
   * [x] 无格式（zip），直接打包原始图片
 * [x] 更多的资源来源支持
   * [x] manhua.dmzj.com (动漫之家)
-  * [ ] www.dm5.com (动漫屋)
   * [x] www.cartoonmad.com (动漫狂)
-  * [ ] manhua.fzdm.com (风之动漫)
   * [x] www.gufengmh.com (古风漫画网)
   * [x] www.hhmmoo.com (汗汗漫画)
-  * [ ] comic.kukudm.com (KuKu动漫)
   * [x] www.manhuagui.com (漫画柜)
   * [x] www.manhuaren.com (漫画人)
   * [x] www.manhuatai.com (漫画台)
