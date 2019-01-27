@@ -14,7 +14,9 @@ impl Extractor for Ehentai {
     }
 
     fn fetch_sections(&self, detail: &mut Detail) -> Result<()> {
-        detail.add_section(Section::new(&detail.name, &detail.url));
+        let fll: LinkListConverter<Section> =
+            LinkListConverter::new(&detail.url, "tbody > tr > td.itd .it5 > a", vec![]);
+        detail.section_list = fll.try_get_list()?.result()?;
         Ok(())
     }
 

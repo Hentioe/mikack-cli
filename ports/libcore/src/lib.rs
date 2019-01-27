@@ -135,7 +135,7 @@ lazy_static! { // Source list
             "新新漫画网", "https://www.177mh.net"
         ),
         (
-            r#"[none]"#,
+            r#"https?://e-hentai\.org/uploader/.+"#,
             r#"https?://e-hentai\.org/g/\d+/[^/]+/"#,
             extractors::Ehentai,
             "E-Hentai", "https://e-hentai.org/"
