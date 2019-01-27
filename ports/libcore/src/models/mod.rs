@@ -65,6 +65,10 @@ impl Detail {
         self.section_list.push(section);
         self
     }
+
+    pub fn reverse_section_list(&mut self) {
+        self.section_list.reverse();
+    }
 }
 
 impl Section {

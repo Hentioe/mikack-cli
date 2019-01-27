@@ -26,6 +26,7 @@ impl Extractor for Hhmh {
         fll.set_href_prefix("http://www.hhmmoo.com");
         let section_list = fll.try_get_list()?.result()?;
         detail.section_list = section_list;
+        detail.reverse_section_list();
         Ok(())
     }
 

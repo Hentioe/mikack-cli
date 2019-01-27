@@ -28,6 +28,7 @@ impl Extractor for Mht {
             });
         let section_list = fll.try_get_list()?.result()?;
         detail.section_list = section_list;
+        detail.reverse_section_list();
         Ok(())
     }
 

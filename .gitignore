@@ -7,3 +7,6 @@
 /.cargo
 
 manga_res/
+/packages
+
+*.sh
