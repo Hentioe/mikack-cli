@@ -201,11 +201,11 @@ impl<'a> Exporter for Epub<'a> {
     fn save(&mut self, output_dir: &str) -> Result<String> {
         // 建立输出目录
         std::fs::create_dir_all(output_dir)?;
-        let cache_dir = format!("manga_res/{}/.cache", &self.section.name);
+        let cache_dir = format!("manga_res/{}/.cache", &self.section.fix_slash_name());
         // 缓存 epub
         self.cache()?;
-        let cache_file = format!("{}/{}.epub", &cache_dir, &self.section.name);
-        let dst_file = format!("{}/{}.epub", &output_dir, &self.section.name);
+        let cache_file = format!("{}/{}.epub", &cache_dir, &self.section.fix_slash_name());
+        let dst_file = format!("{}/{}.epub", &output_dir, &self.section.fix_slash_name());
         // 复制缓存结果到输出目录
         std::fs::copy(&cache_file, &dst_file)?;
         Ok(dst_file)

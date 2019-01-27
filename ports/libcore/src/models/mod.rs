@@ -1,3 +1,4 @@
+use crate::fix_slash;
 use serde_derive::{Deserialize, Serialize};
 
 // 漫画（图片集）平台
@@ -73,6 +74,10 @@ impl Section {
             url: url.to_owned(),
             page_list: vec![],
         }
+    }
+
+    pub fn fix_slash_name(&self) -> String {
+        fix_slash!(self.name)
     }
 
     pub fn reset_page_list(&mut self, page_list: Vec<Page>) -> &Self {

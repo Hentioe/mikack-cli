@@ -21,7 +21,6 @@ use lazy_static::lazy_static;
 use models::*;
 use regex::Regex;
 use std::path::PathBuf;
-
 pub const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
 pub fn get_cache_path(section_name: &str) -> errors::Result<String> {
@@ -40,7 +39,7 @@ pub fn get_cache_path(section_name: &str) -> errors::Result<String> {
 
 pub fn get_origin_path(section_name: &str) -> errors::Result<String> {
     let mut path = PathBuf::from(BASE_RES_DIR);
-    path.push(section_name);
+    path.push(fix_slash!(section_name));
     path.push(ORIGIN_DIR_NAME);
 
     Ok(path
@@ -53,6 +52,13 @@ pub fn get_origin_path(section_name: &str) -> errors::Result<String> {
 }
 
 type Source = (Regex, &'static (Extractor + Sync), Platform<'static>);
+
+#[macro_export]
+macro_rules! fix_slash {
+    ( $s:expr ) => {{
+        $s.replace("/", "[slash]")
+    }};
+}
 
 #[macro_export]
 macro_rules! append_source {

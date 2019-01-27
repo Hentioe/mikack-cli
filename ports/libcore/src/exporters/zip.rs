@@ -18,7 +18,7 @@ impl Exporter for Zip {
         // 下载整个 Section 的资源
         storage::from_section(&mut self.section)?.finish();
         let origin_dir = get_origin_path(&self.section.name)?;
-        let dst_file = format!("{}/{}.zip", &output_dir, &self.section.name);
+        let dst_file = format!("{}/{}.zip", &output_dir, self.section.fix_slash_name());
         // 使用原始图片目录产生压缩包
         Self::archive_dir(&origin_dir, &dst_file)?;
         Ok(dst_file)

@@ -1,6 +1,5 @@
 use super::{epub::*, zip::*};
-use crate::errors::*;
-use crate::storage;
+use crate::{errors::*, fix_slash, storage};
 use scan_dir::ScanDir;
 use std::io::prelude::*;
 use std::{fs::File, path::PathBuf};
@@ -12,8 +11,8 @@ pub trait Exporter {
 
 impl<'a> Epub<'a> {
     pub fn cache(&mut self) -> Result<()> {
-        let cache_dir = format!("manga_res/{}/.cache", &self.section.name);
-        let cache_file = format!("{}/{}.epub", &cache_dir, &self.section.name);
+        let cache_dir = format!("manga_res/{}/.cache", &self.section.fix_slash_name());
+        let cache_file = format!("{}/{}.epub", &cache_dir, &self.section.fix_slash_name());
         if PathBuf::from(&cache_file).exists() {
             return Ok(());
         }
@@ -41,7 +40,9 @@ impl<'a> Epub<'a> {
             }
             let origin_path = format!(
                 "{}/{}/origins/{}",
-                "manga_res", &self.section.name, &img_name
+                "manga_res",
+                &self.section.fix_slash_name(),
+                &img_name
             );
             std::fs::copy(&origin_path, format!("{}/{}", &cache_epub_dir, &img_name))?;
             // 复制第一张图为封面
@@ -108,15 +109,16 @@ impl Zip {
                     zip_f.write_all(&*buffer).unwrap();
                     buffer.clear();
                 } else {
+                    let path = &format!("{}/", fix_slash!(format!("{}{}", parent_dir, name)));
                     zip_f
-                        .add_directory(format!("{}{}/", parent_dir, name), FileOptions::default())
+                        .add_directory(path.clone(), FileOptions::default())
                         .unwrap();
                     Self::archive(
                         entry.path().to_str().unwrap(),
                         &mut buffer,
                         &mut zip_f,
                         options,
-                        &format!("{}{}/", parent_dir, name),
+                        path,
                     )
                     .unwrap();
                 }
