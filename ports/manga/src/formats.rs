@@ -26,18 +26,6 @@ macro_rules! append_formats {
     }
 }
 
-type FormatBy = (HashMap<&'static str, Format>, HashMap<Format, &'static str>);
-
-lazy_static! {
-    static ref FORMATS_BY: FormatBy = append_formats![
-        ("epub", Epub),
-        ("mobi", Mobi),
-        ("azw3", Azw3),
-        ("pdf", Pdf),
-        ("zip", Zip)
-    ];
-}
-
 impl ToString for Format {
     fn to_string(&self) -> String {
         FORMATS_BY.1.get(self).unwrap().to_string()
@@ -48,4 +36,16 @@ impl Format {
     pub fn find(format_s: &str) -> Option<&Format> {
         FORMATS_BY.0.get(format_s.to_lowercase().as_str())
     }
+}
+
+type FormatBy = (HashMap<&'static str, Format>, HashMap<Format, &'static str>);
+
+lazy_static! {
+    static ref FORMATS_BY: FormatBy = append_formats![
+        ("epub", Epub),
+        ("mobi", Mobi),
+        ("azw3", Azw3),
+        ("pdf", Pdf),
+        ("zip", Zip)
+    ];
 }

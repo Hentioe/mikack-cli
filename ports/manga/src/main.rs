@@ -327,8 +327,13 @@ mod tests {
     fn test_parse_section_list() {
         let input = "1, 2, 3, 4-8， ^5, ^2";
         let result = parse_section_list(&input);
-        for i in [0, 2, 3, 5, 6, 7].iter() {
-            assert!(result.contains(i));
-        }
+        assert_eq!(
+            "0, 2, 3, 5, 6, 7",
+            result
+                .iter()
+                .map(|i| i.to_string())
+                .collect::<Vec<String>>()[..]
+                .join(", ")
+        )
     }
 }

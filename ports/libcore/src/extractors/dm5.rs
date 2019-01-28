@@ -117,7 +117,7 @@ mod tests {
             "http://www.dm5.com/manhua-lingnengbaifenbai/",
         );
         Dm5 {}.fetch_sections(&mut detail).unwrap();
-        assert_eq!(282, detail.section_list.len());
+        assert_eq!(283, detail.section_list.len());
     }
 
     //        #[test]
