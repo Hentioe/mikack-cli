@@ -11,6 +11,18 @@ pub enum Format {
 
 use self::Format::*;
 
+macro_rules! append_formats {
+    ( $( $format:expr ), * ) => {
+        {
+            let mut formats: HashMap<&'static str, Format> = HashMap::new();
+            $(
+                formats.insert($format.0, $format.1);
+            )*
+            formats
+        }
+    }
+}
+
 lazy_static! {
     static ref EPUB: &'static str = "epub";
     static ref MOBI: &'static str = "mobi";
@@ -20,15 +32,13 @@ lazy_static! {
 }
 
 lazy_static! {
-    static ref FORMATS: HashMap<&'static str, Format> = {
-        let mut fs = HashMap::new();
-        fs.insert(*EPUB, Epub);
-        fs.insert(*MOBI, Mobi);
-        fs.insert(*AZW3, Azw3);
-        fs.insert(*PDF, Pdf);
-        fs.insert(*ZIP, Zip);
-        fs
-    };
+    static ref FORMATS: HashMap<&'static str, Format> = append_formats![
+        (*EPUB, Epub),
+        (*MOBI, Mobi),
+        (*AZW3, Azw3),
+        (*PDF, Pdf),
+        (*ZIP, Zip)
+    ];
 }
 
 impl ToString for Format {
