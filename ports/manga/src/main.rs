@@ -1,7 +1,6 @@
 mod clean;
 mod formats;
 
-use colored::*;
 use console::{style, Emoji};
 use formats::*;
 use libcore::{
@@ -12,16 +11,19 @@ use libcore::{
 };
 use log::debug;
 use manga::cli;
+use manga::{exit_err, print_err, step_help};
 use std::io::prelude::*;
 
 static LOOKING_GLASS: Emoji = Emoji("🔍  ", "");
 static TRUCK: Emoji = Emoji("🚚  ", "");
 
-fn main() -> Result<()> {
+fn main() {
     if let Err(e) = action() {
-        eprintln!("{}", e.to_string().red());
+        exit_err!(e);
     }
-    Ok(waiting_for_confirmation()?)
+    if let Err(e) = waiting_for_confirmation() {
+        exit_err!(e);
+    }
 }
 
 fn action() -> Result<()> {
@@ -62,9 +64,7 @@ fn from_source_list(output_dir: &str, formats: &[&Format]) -> Result<()> {
     for (i, (_r, _f, p)) in source_list.iter().enumerate() {
         println!("{}. {}", i + 1, p.name)
     }
-    println!("==> Please choose a platform (e.g: 1, want to support your favorite platform? Go to the issue and tell me!)");
-    print!("==> ");
-    std::io::stdout().flush()?;
+    step_help!("Please choose a platform (e.g: 1, want to support your favorite platform? Go to the issue and tell me!)")?;
     let mut input = String::new();
     std::io::stdin().read_line(&mut input)?;
     let n = input.trim().parse::<u32>()?;
@@ -77,9 +77,7 @@ fn from_source_list(output_dir: &str, formats: &[&Format]) -> Result<()> {
         for (i, detail) in detail_list.iter().enumerate() {
             println!("{}. {}", i + 1, &detail.name);
         }
-        println!("==> Please choose a detail (e.g: 1, Enter to go to the next list)");
-        print!("==> ");
-        std::io::stdout().flush()?;
+        step_help!("Please choose a detail (e.g: 1, Enter to go to the next list)")?;
         let mut input = String::new();
         std::io::stdin().read_line(&mut input)?;
         input = input.trim().to_string();
@@ -132,9 +130,8 @@ fn analysis_url(url: &str, output_dir: &str, formats: &[&Format]) -> Result<()> 
                 for (i, sec) in detail.section_list.iter().enumerate() {
                     println!("{}", format!("{}. {}", (i + 1), &sec.name));
                 }
-                print!("==> Select to save (eg: 1,2,3, 4-6, ^5)\n==> ");
+                step_help!("Select to save (eg: 1,2,3, 4-6, ^5)")?;
                 let mut input = String::new();
-                std::io::stdout().flush()?;
                 std::io::stdin().read_line(&mut input)?;
                 let select_list = parse_section_list(&input.trim());
                 println!("[3/2] {} Done!", Emoji("✨", ":-)"));
@@ -153,7 +150,7 @@ fn analysis_url(url: &str, output_dir: &str, formats: &[&Format]) -> Result<()> 
                         match save(&sec.url, *fr, p, output_dir, &formats) {
                             Ok(_) => {}
                             Err(e) => {
-                                eprintln!("{}", e.to_string().red());
+                                print_err!(e);
                                 failed_count = failed_count + 1;
                             }
                         }
@@ -230,16 +227,12 @@ enum UsageMode {
 fn select_mode() -> Result<UsageMode> {
     println!("1. Custom url");
     println!("2. Platform select");
-    println!("==> Select the usage mode (e.g: 1)");
-    print!("==> ");
-    std::io::stdout().flush()?;
+    step_help!("Select the usage mode (e.g: 1)")?;
     let mut input = String::new();
     std::io::stdin().read_line(&mut input)?;
     match input.trim().parse::<usize>()? {
         1 => {
-            println!("==> Give me a URL (e.g: https://manhua.dmzj.com/yiquanchaoren/)");
-            print!("==> ");
-            std::io::stdout().flush()?;
+            step_help!("Give me a URL (e.g: https://manhua.dmzj.com/yiquanchaoren/)")?;
             let mut input = String::new();
             std::io::stdin().read_line(&mut input)?;
             Ok(UsageMode::CustomUrl(input.trim().to_owned()))
@@ -256,8 +249,7 @@ fn select_mode() -> Result<UsageMode> {
 
 #[cfg(target_os = "windows")]
 fn waiting_for_confirmation() -> Result<()> {
-    print!("[-/-] Waiting exit... (Enter key to confirm)");
-    std::io::stdout().flush()?;
+    step_help!("[-/-] Waiting exit... (Enter key to confirm)")?;
     std::io::stdin().read_line(&mut String::new())?;
     Ok(())
 }
