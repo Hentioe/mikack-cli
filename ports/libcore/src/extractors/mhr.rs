@@ -94,7 +94,7 @@ mod tests {
             "http://www.manhuaren.com/manhua-yuedingdemenghuandao/",
         );
         Mhr {}.fetch_sections(&mut detail).unwrap();
-        assert_eq!(103, detail.section_list.len());
+        assert_eq!(104, detail.section_list.len());
     }
 
     #[test]
