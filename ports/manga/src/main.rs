@@ -11,7 +11,7 @@ use libcore::{
 };
 use log::debug;
 use manga::cli;
-use manga::{exit_err, print_err, step_help};
+use manga::{exit_err, name_styled, no_styled, print_err, step_help};
 use std::io::prelude::*;
 
 static LOOKING_GLASS: Emoji = Emoji("🔍  ", "");
@@ -62,9 +62,9 @@ fn from_source_list(output_dir: &str, formats: &[&Format]) -> Result<()> {
     println!("They are our source of resources:");
     let source_list = &libcore::MATCHES.0;
     for (i, (_r, _f, p)) in source_list.iter().enumerate() {
-        println!("{}. {}", i + 1, p.name)
+        println!("{} {}", no_styled!(i + 1), name_styled!(p.name))
     }
-    step_help!("Please choose a platform (e.g: 1, want to support your favorite platform? Go to the issue and tell me!)")?;
+    step_help!("Choose a platform (e.g: 1, want to support your favorite platform? Go to the issue and tell me!)")?;
     let mut input = String::new();
     std::io::stdin().read_line(&mut input)?;
     let n = input.trim().parse::<u32>()?;
@@ -75,9 +75,9 @@ fn from_source_list(output_dir: &str, formats: &[&Format]) -> Result<()> {
     loop {
         let detail_list = extractor.index(more)?;
         for (i, detail) in detail_list.iter().enumerate() {
-            println!("{}. {}", i + 1, &detail.name);
+            println!("{} {}", no_styled!(i + 1), name_styled!(&detail.name));
         }
-        step_help!("Please choose a detail (e.g: 1, Enter to go to the next list)")?;
+        step_help!("Choose a detail (e.g: 1, Enter to go to the next list)")?;
         let mut input = String::new();
         std::io::stdin().read_line(&mut input)?;
         input = input.trim().to_string();
@@ -128,7 +128,10 @@ fn analysis_url(url: &str, output_dir: &str, formats: &[&Format]) -> Result<()> 
                 println!("[1/3] {} Done!", Emoji("✨", ":-)"));
                 println!("{} {}Selecting list...", style("[3/2]").bold().dim(), TRUCK);
                 for (i, sec) in detail.section_list.iter().enumerate() {
-                    println!("{}", format!("{}. {}", (i + 1), &sec.name));
+                    println!(
+                        "{}",
+                        format!("{} {}", no_styled!(i + 1), name_styled!(&sec.name))
+                    );
                 }
                 step_help!("Select to save (eg: 1,2,3, 4-6, ^5)")?;
                 let mut input = String::new();
