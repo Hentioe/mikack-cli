@@ -61,7 +61,7 @@ macro_rules! fix_slash {
 }
 
 #[macro_export]
-macro_rules! append_source {
+macro_rules! append_sources {
     ( $(( 'name $name:expr, 'homepage $homepage:expr, 'detail_regex $detail_regex:expr, 'section_regex $section_regex:expr, 'extractor $extractor:expr )),* ) => {
         {
             let mut section_sources: Vec<Source> = Vec::new();
@@ -85,7 +85,7 @@ fn build_regex(expr: &str) -> Regex {
 }
 
 lazy_static! { // Source list
-    pub static ref MATCHES: (Vec<Source>, Vec<Source>) = append_source![
+    pub static ref MATCHES: (Vec<Source>, Vec<Source>) = append_sources![
         (
 
             'name "动漫之家",
