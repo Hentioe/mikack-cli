@@ -120,7 +120,7 @@ mod tests {
     fn test_mht_fetch_sections() {
         let mut detail = Detail::new("斗破苍穹", "https://www.manhuatai.com/doupocangqiong/");
         Mht {}.fetch_sections(&mut detail).unwrap();
-        assert_eq!(741, detail.section_list.len());
+        assert_eq!(742, detail.section_list.len());
     }
 
     #[test]
