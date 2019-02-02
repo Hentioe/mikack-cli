@@ -10,8 +10,7 @@ use libcore::{
     models::*,
 };
 use log::debug;
-use manga::cli;
-use manga::{exit_err, name_styled, no_styled, print_err, step_help};
+use manga::{cli, exit_err, name_styled, num_styled, print_err, step_help};
 use std::io::prelude::*;
 
 static LOOKING_GLASS: Emoji = Emoji("🔍  ", "");
@@ -62,7 +61,7 @@ fn from_source_list(output_dir: &str, formats: &[&Format]) -> Result<()> {
     println!("They are our source of resources:");
     let source_list = &libcore::MATCHES.0;
     for (i, (_r, _f, p)) in source_list.iter().enumerate() {
-        println!("{} {}", no_styled!(i + 1), name_styled!(p.name))
+        println!("{} {}", num_styled!(i + 1), name_styled!(p.name))
     }
     step_help!("Choose a platform (e.g: 1, want to support your favorite platform? Go to the issue and tell me!)")?;
     let mut input = String::new();
@@ -75,7 +74,7 @@ fn from_source_list(output_dir: &str, formats: &[&Format]) -> Result<()> {
     loop {
         let detail_list = extractor.index(more)?;
         for (i, detail) in detail_list.iter().enumerate() {
-            println!("{} {}", no_styled!(i + 1), name_styled!(&detail.name));
+            println!("{} {}", num_styled!(i + 1), name_styled!(&detail.name));
         }
         step_help!("Choose a detail (e.g: 1, Enter to go to the next list)")?;
         let mut input = String::new();
@@ -130,7 +129,7 @@ fn analysis_url(url: &str, output_dir: &str, formats: &[&Format]) -> Result<()> 
                 for (i, sec) in detail.section_list.iter().enumerate() {
                     println!(
                         "{}",
-                        format!("{} {}", no_styled!(i + 1), name_styled!(&sec.name))
+                        format!("{} {}", num_styled!(i + 1), name_styled!(&sec.name))
                     );
                 }
                 step_help!("Select to save (eg: 1,2,3, 4-6, ^5)")?;
