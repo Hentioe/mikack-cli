@@ -62,15 +62,15 @@ macro_rules! fix_slash {
 
 #[macro_export]
 macro_rules! append_source {
-    ( $( $source:expr ),* ) => {
+    ( $(( 'name $name:expr, 'homepage $homepage:expr, 'detail_regex $detail_regex:expr, 'section_regex $section_regex:expr, 'extractor $extractor:expr )),* ) => {
         {
             let mut section_sources: Vec<Source> = Vec::new();
             let mut detail_sources: Vec<Source> = Vec::new();
             $(
-                let re_detail = build_regex($source.0);
-                let re_section = build_regex($source.1);
-                let extractor = &$source.2 as &(Extractor + Sync);
-                let platform = Platform::new($source.3, $source.4);
+                let re_detail = build_regex($detail_regex);
+                let re_section = build_regex($section_regex);
+                let extractor = &$extractor as &(Extractor + Sync);
+                let platform = Platform::new($name, $homepage);
 
                 detail_sources.push((re_detail, extractor, platform));
                 section_sources.push((re_section, extractor, platform));
@@ -87,64 +87,75 @@ fn build_regex(expr: &str) -> Regex {
 lazy_static! { // Source list
     pub static ref MATCHES: (Vec<Source>, Vec<Source>) = append_source![
         (
-            r#"https?://manhua\.dmzj\.com/[^/]+/$"#,
-            r#"^https?://manhua\.dmzj\.com/[^/]+/\d+\.shtml"#,
-            extractors::Dmzj,
-            "动漫之家", "https://manhua.dmzj.com"
+
+            'name "动漫之家",
+            'homepage "https://manhua.dmzj.com",
+            'detail_regex r#"https?://manhua\.dmzj\.com/[^/]+/$"#,
+            'section_regex r#"^https?://manhua\.dmzj\.com/[^/]+/\d+\.shtml"#,
+            'extractor extractors::Dmzj
         ),
         (
-            r#"https?://www\.hhmmoo\.com/manhua\d+\.html"#,
-            r#"^https?://www\.hhmmoo\.com/page\d+/\d+\.html"#,
-            extractors::Hhmh,
-            "汗汗漫画", "http://www.hhmmoo.com"
+            'name "汗汗漫画",
+            'homepage "http://www.hhmmoo.com",
+            'detail_regex r#"https?://www\.hhmmoo\.com/manhua\d+\.html"#,
+            'section_regex r#"^https?://www\.hhmmoo\.com/page\d+/\d+\.html"#,
+            'extractor extractors::Hhmh
         ),
         (
-            r#"https?://www\.cartoonmad\.com/comic/\d{1,10}.html"#,
-            r#"^https?://www\.cartoonmad\.com/comic/\d{11,}\.html$"#,
-            extractors::Dmk,
-            "動漫狂", "https://www.cartoonmad.com"
+            'name "動漫狂",
+            'homepage "https://www.cartoonmad.com",
+            'detail_regex r#"https?://www\.cartoonmad\.com/comic/\d{1,10}.html"#,
+            'section_regex r#"^https?://www\.cartoonmad\.com/comic/\d{11,}\.html$"#,
+            'extractor extractors::Dmk
         ),
         (
-            r#"https?://www\.manhuagui\.com/comic/\d+/"#,
-            r#"https?://www\.manhuagui\.com/comic/\d+/\d+.html"#,
-            extractors::Mhg,
-            "漫画柜", "https://www.manhuagui.com"
+            'name "漫画柜",
+            'homepage "https://www.manhuagui.com",
+            'detail_regex r#"https?://www\.manhuagui\.com/comic/\d+/"#,
+            'section_regex r#"https?://www\.manhuagui\.com/comic/\d+/\d+.html"#,
+            'extractor extractors::Mhg
         ),
         (
-            r#"https?://www\.verydm\.com/manhua/[^/]+"#,
-            r#"https?://www\.verydm\.com/chapter\.php\?id=\d+"#,
-            extractors::Fcam,
-            "非常爱漫", "http://www.verydm.com"
+            'name "非常爱漫",
+            'homepage "http://www.verydm.com",
+            'detail_regex r#"https?://www\.verydm\.com/manhua/[^/]+"#,
+            'section_regex r#"https?://www\.verydm\.com/chapter\.php\?id=\d+"#,
+            'extractor extractors::Fcam
         ),
         (
-            r#"https?://www\.gufengmh\.com/manhua/[^/]+/$"#,
-            r#"https?://www\.gufengmh\.com/manhua/.+/\d+\.html"#,
-            extractors::Gfmh,
-            "古风漫画网", "http://www.gufengmh.com"
+            'name "古风漫画网",
+            'homepage "http://www.gufengmh.com",
+            'detail_regex r#"https?://www\.gufengmh\.com/manhua/[^/]+/$"#,
+            'section_regex r#"https?://www\.gufengmh\.com/manhua/.+/\d+\.html"#,
+            'extractor extractors::Gfmh
         ),
         (
-            r#"https?://www\.manhuatai\.com/[^/]+/$"#,
-            r#"https?://www\.manhuatai\.com/[^/]+/\d+\.html"#,
-            extractors::Mht,
-            "漫画台", "https://www.manhuatai.com"
+            'name "漫画台",
+            'homepage "https://www.manhuatai.com",
+            'detail_regex r#"https?://www\.manhuatai\.com/[^/]+/$"#,
+            'section_regex r#"https?://www\.manhuatai\.com/[^/]+/\d+\.html"#,
+            'extractor extractors::Mht
         ),
         (
-            r#"https?://www\.manhuaren\.com/[^/]+/$"#,
-            r#"https?://www\.manhuaren\.com/m\d+/"#,
-            extractors::Mhr,
-            "漫画人", "http://www.manhuaren.com"
+            'name "漫画人",
+            'homepage "http://www.manhuaren.com",
+            'detail_regex r#"https?://www\.manhuaren\.com/[^/]+/$"#,
+            'section_regex r#"https?://www\.manhuaren\.com/m\d+/"#,
+            'extractor extractors::Mhr
         ),
         (
-            r#"https?://www\.177mh\.net/colist_\d+\.html"#,
-            r#"https?://www\.177mh\.net/\d+/\d+\.html"#,
-            extractors::Xxmh,
-            "新新漫画网", "https://www.177mh.net"
+            'name "新新漫画网",
+            'homepage "https://www.177mh.net",
+            'detail_regex r#"https?://www\.177mh\.net/colist_\d+\.html"#,
+            'section_regex r#"https?://www\.177mh\.net/\d+/\d+\.html"#,
+            'extractor extractors::Xxmh
         ),
         (
-            r#"https?://e-hentai\.org/uploader/.+"#,
-            r#"https?://e-hentai\.org/g/\d+/[^/]+/"#,
-            extractors::Ehentai,
-            "E-Hentai", "https://e-hentai.org/"
+            'name "E-Hentai",
+            'homepage "https://e-hentai.org/",
+            'detail_regex r#"https?://e-hentai\.org/uploader/.+"#,
+            'section_regex r#"https?://e-hentai\.org/g/\d+/[^/]+/"#,
+            'extractor extractors::Ehentai
         )
     ];
 }
