@@ -27,7 +27,7 @@ English Version:
 
 ### 使用演示
 
-![演示动画](https://raw.githubusercontent.com/Hentioe/manga-rs/master/.github/manga.gif)
+![演示动画](https://raw.githubusercontent.com/Hentioe/manga-rs/master/demo/usage.gif)
 
 ### 目的
 
@@ -90,7 +90,7 @@ English Version:
 
 * `manga-bot` 和 `manga` 有什么区别？为什么版本不一样？
 
-  严格来说 `manga` 指的是当前项目 manga-rs，只是一个前端，是一套基于 CLI 交互的与用户操作逻辑的实现。而 `manga-bot` 是一个库，用于提供最核心功能的“模块”。只不过这个模块当前并没有从 manga-rs 中抽离出来，但是不影响它有独立于 `manga` 的版本。版本不一样是因为 `manga-bot` 的版本决定了生成输出文件的结构和平台支持状况，而不是 `manga` 的版本，这也是为什么要在版权信息里边写上 `manga-bot` 的版本而不是 `manga` 版本。以后共用 `manga-bot` 模块还会出现 GUI 前端、Android 前端等等（甚至第三方衍生项目），所以强调 `manga-bot` 版本自然至关重要。
+  严格来说 `manga` 指的是当前项目 manga-rs，只是一个前端，是一套基于 CLI 交互逻辑的实现。而 `manga-bot` 是一个库([地址](https://github.com/manga-project/manga-bot))，用于提供最核心功能的“模块”。这个模块当前已从 manga-rs 中抽离出来，所以它有独立于 `manga` 的版本。而决定了生成输出文件的结构和平台支持状况的是 `manga-bot` 的版本，而不是 `manga` 的版本，这也是为什么要在版权信息里边写上 `manga-bot` 的版本而不是 `manga` 版本。以后共用 `manga-bot` 模块还会出现 GUI 前端、Android 前端等等（甚至第三方衍生项目），所以强调 `manga-bot` 版本自然至关重要。
 
 ## TODO(1.0)
 
@@ -119,3 +119,4 @@ English Version:
   * [x] 清理缓存资源
   * [x] 指定输出目录
   * [x] 原始图片复用（避免重复下载）
+* [ ] 接受并处理反馈，将项目重命名为 `manga-cli`

@@ -1,4 +1,4 @@
-use libcore::errors::*;
+use manga_bot::errors::*;
 use scan_dir::ScanDir;
 use std::path::PathBuf;
 
@@ -19,11 +19,11 @@ pub fn delete_cache() -> Result<()> {
 
 fn find_all_cache_dir() -> Result<Vec<String>> {
     let mut cache_dir_list: Vec<PathBuf> = vec![];
-    ScanDir::dirs().read(libcore::BASE_RES_DIR, |iter| {
+    ScanDir::dirs().read(manga_bot::BASE_RES_DIR, |iter| {
         for (entry, name) in iter {
             if "outputs" != name {
                 let mut path = entry.path();
-                path.push(libcore::CACHE_DIR_NAME);
+                path.push(manga_bot::CACHE_DIR_NAME);
                 cache_dir_list.push(path);
             }
         }

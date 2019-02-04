@@ -3,7 +3,7 @@ mod formats;
 
 use console::{style, Emoji};
 use formats::*;
-use libcore::{
+use manga_bot::{
     errors::*,
     exporters::{prelude::*, *},
     extractors::prelude::*,
@@ -35,7 +35,7 @@ fn action() -> Result<()> {
     )?;
     let output_dir = matches
         .value_of("output-directory")
-        .unwrap_or(libcore::DEFAULT_OUTPUT_DIR);
+        .unwrap_or(manga_bot::DEFAULT_OUTPUT_DIR);
     if matches.is_present("clean") {
         clean::delete_cache()?;
     } else if matches.value_of("url").is_some() {
@@ -59,7 +59,7 @@ fn action() -> Result<()> {
 
 fn from_source_list(output_dir: &str, formats: &[&Format]) -> Result<()> {
     println!("They are our source of resources:");
-    let source_list = &libcore::MATCHES.0;
+    let source_list = &manga_bot::MATCHES.0;
     for (i, (_r, _f, p)) in source_list.iter().enumerate() {
         println!("{} {}", num_styled!(i + 1), name_styled!(p.name))
     }
@@ -97,7 +97,7 @@ fn from_source_list(output_dir: &str, formats: &[&Format]) -> Result<()> {
 
 fn analysis_url(url: &str, output_dir: &str, formats: &[&Format]) -> Result<()> {
     debug!("analysis url: {}", &url);
-    let section_matches = &libcore::MATCHES.1;
+    let section_matches = &manga_bot::MATCHES.1;
     let mut passed = false;
     for (re, fr, p) in section_matches.iter() {
         if re.find(&url).is_none() {
@@ -110,7 +110,7 @@ fn analysis_url(url: &str, output_dir: &str, formats: &[&Format]) -> Result<()> 
     }
     if !passed {
         // 作为 Detail url 继续检测
-        let detail_matches = &libcore::MATCHES.0;
+        let detail_matches = &manga_bot::MATCHES.0;
 
         for (re, fr, p) in detail_matches.iter() {
             if re.find(&url).is_none() {
