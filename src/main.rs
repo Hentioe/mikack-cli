@@ -3,14 +3,14 @@ mod formats;
 
 use console::{style, Emoji};
 use formats::*;
+use log::debug;
+use manga::{cli, exit_err, name_styled, num_styled, print_err, step_help};
 use manga_bot::{
     errors::*,
     exporters::{prelude::*, *},
     extractors::prelude::*,
     models::*,
 };
-use log::debug;
-use manga::{cli, exit_err, name_styled, num_styled, print_err, step_help};
 use std::io::prelude::*;
 
 static LOOKING_GLASS: Emoji = Emoji("🔍  ", "");
