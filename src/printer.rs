@@ -18,16 +18,6 @@ macro_rules! print_err {
 }
 
 #[macro_export]
-macro_rules! exit_err {
-    ( $e:expr ) => {{
-        use manga::print_err;
-        use std::process;
-        print_err!($e);
-        process::exit(233);
-    }};
-}
-
-#[macro_export]
 macro_rules! num_styled {
     ( $num:expr) => {{
         use colored::*;

@@ -4,25 +4,32 @@ mod formats;
 use console::{style, Emoji};
 use formats::*;
 use log::debug;
-use manga::{cli, exit_err, name_styled, num_styled, print_err, step_help};
+use manga::{cli, name_styled, num_styled, print_err, step_help};
 use manga_bot::{
     errors::*,
     exporters::{prelude::*, *},
     extractors::prelude::*,
     models::*,
 };
-use std::io::prelude::*;
+use std::{io::prelude::*, process};
 
 static LOOKING_GLASS: Emoji = Emoji("🔍  ", "");
 static TRUCK: Emoji = Emoji("🚚  ", "");
 
 fn main() {
     if let Err(e) = action() {
-        exit_err!(e);
+        print_err!(e);
+        waitting_exit(233);
     }
+    waitting_exit(0);
+}
+
+fn waitting_exit(exit_code: i32) {
     if let Err(e) = waiting_for_confirmation() {
-        exit_err!(e);
+        print_err!(e);
+        process::exit(100);
     }
+    process::exit(exit_code);
 }
 
 fn action() -> Result<()> {
@@ -31,7 +38,7 @@ fn action() -> Result<()> {
     let formats = parse_formats(
         matches
             .value_of("output-format(s)")
-            .ok_or(err_msg("missing 'formats' parameter"))?,
+            .ok_or(err_msg("missing \"formats\" parameter"))?,
     )?;
     let output_dir = matches
         .value_of("output-directory")
@@ -308,7 +315,7 @@ fn parse_formats(formats: &str) -> Result<Vec<&Format>> {
     let re = regex::Regex::new("(,|，)").unwrap();
     let mut list: Vec<&Format> = vec![];
     for f in re.split(formats).collect::<Vec<&str>>() {
-        list.push(Format::find(f).ok_or(err_msg(format!("unsupported format '{}'", f)))?)
+        list.push(Format::find(f).ok_or(err_msg(format!("unsupported format \"{}\"", f)))?)
     }
     Ok(list)
 }
