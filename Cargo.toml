@@ -1,6 +1,6 @@
 [package]
 name = "manga"
-version = "0.5.5"
+version = "0.5.6-dev"
 authors = ["Hentioe_Cl <me@bluerain.io>"]
 edition = "2018"
 
@@ -16,3 +16,6 @@ regex = "1.1.0"
 console = "0.7.3"
 scan_dir = "0.3.3"
 colored = "1.7.0"
+
+[profile.release]
+lto = true
