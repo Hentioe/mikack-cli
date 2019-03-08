@@ -2,9 +2,9 @@
 
 Smaller, faster and less dependent [manga](https://github.com/Hentioe/manga).
 
-## ⚠️
+## Copyright
 
-The purpose of this project has never been to disseminate pirated resources, and the resources obtained through this tool are prohibited for profit.
+⚠️ The purpose of this project has never been to disseminate pirated resources, and the resources obtained through this tool are prohibited for profit.
 The following instructions need to be added to the derivative project, e.g:
 > ### 版权信息
 > 图书名：[图书名]  
