@@ -708,7 +708,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "manga"
-version = "0.5.6-dev"
+version = "0.5.7"
 dependencies = [
  "clap 2.32.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "colored 1.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -718,15 +718,15 @@ dependencies = [
  "indicatif 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "manga-bot 0.1.8 (git+https://github.com/manga-project/manga-bot?tag=0.1.8)",
+ "manga-bot 0.1.9 (git+https://github.com/manga-project/manga-bot?tag=0.1.9)",
  "regex 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "scan_dir 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "manga-bot"
-version = "0.1.8"
-source = "git+https://github.com/manga-project/manga-bot?tag=0.1.8#045b02d3a0f403da682c4daded901b6c21f0e3da"
+version = "0.1.9"
+source = "git+https://github.com/manga-project/manga-bot?tag=0.1.9#a566abb5d4cc73f5d426ea6d62899a4924f25d5b"
 dependencies = [
  "chrono 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "encoding_rs 0.8.16 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2134,7 +2134,7 @@ dependencies = [
 "checksum lock_api 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)" = "62ebf1391f6acad60e5c8b43706dde4582df75c06698ab44511d15016bc2442c"
 "checksum log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)" = "c84ec4b527950aa83a329754b01dbe3f58361d1c5efacd1f6d68c494d08a17c6"
 "checksum mac 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "c41e0c4fef86961ac6d6f8a82609f55f31b05e4fce149ac5710e439df7619ba4"
-"checksum manga-bot 0.1.8 (git+https://github.com/manga-project/manga-bot?tag=0.1.8)" = "<none>"
+"checksum manga-bot 0.1.9 (git+https://github.com/manga-project/manga-bot?tag=0.1.9)" = "<none>"
 "checksum maplit 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "08cbb6b4fef96b6d77bfc40ec491b1690c779e77b05cd9f07f787ed376fd4c43"
 "checksum markup5ever 0.7.5 (registry+https://github.com/rust-lang/crates.io-index)" = "897636f9850c3eef4905a5540683ed53dc9393860f0846cab2c2ddf9939862ff"
 "checksum matches 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)" = "7ffc5c5338469d4d3ea17d269fa8ea3512ad247247c30bd2df69e68309ed0a08"

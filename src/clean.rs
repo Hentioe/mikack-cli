@@ -10,6 +10,7 @@ pub fn delete_cache() -> Result<()> {
             failed_count = failed_count + 1;
         }
     }
+    println!("");
     println!(
         "{} cache directories deleted",
         (cache_dir_list.len() - failed_count),
