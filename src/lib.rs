@@ -7,6 +7,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::fs::File;
 use std::io::{stdin, stdout, Write};
+use std::path::PathBuf;
 
 pub mod cli;
 
@@ -20,9 +21,16 @@ pub fn read_input_as_string(msg: &str) -> Result<String> {
     Ok(s.trim().to_string())
 }
 
+static OUTPUT_DIR: &'static str = "_output";
+
 pub fn save_to(base_dir: &str, name: &str, bytes: &Vec<u8>) -> Result<()> {
-    fs::create_dir_all(format!("_output/{}", base_dir))?;
-    let mut file = File::create(format!("_output/{}/{}.jpg", base_dir, name))?;
+    let mut dir = PathBuf::from(OUTPUT_DIR);
+    dir.push(base_dir);
+    fs::create_dir_all(dir)?;
+    let mut fpath = PathBuf::from(OUTPUT_DIR);
+    fpath.push(base_dir);
+    fpath.push(name);
+    let mut file = File::create(fpath)?;
     file.write_all(bytes)?;
     Ok(())
 }

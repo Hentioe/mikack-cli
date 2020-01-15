@@ -32,7 +32,7 @@ fn main() -> Result<()> {
     let bar = ProgressBar::new(pages_iter.total as u64);
     for page in pages_iter {
         let bytes = get_bytes(&page.address, &page_headers)?;
-        save_to(&base_dir, &page.n.to_string(), &bytes)?;
+        save_to(&base_dir, &page.fname(), &bytes)?;
         bar.inc(1);
     }
     Ok(())
