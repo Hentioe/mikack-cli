@@ -1,4 +1,6 @@
+use lazy_static::lazy_static;
 pub use manga_rs::error::*;
+use regex::Regex;
 use reqwest::{
     blocking::Client,
     header::{HeaderMap, HeaderName, HeaderValue},
@@ -12,6 +14,10 @@ use std::path::PathBuf;
 pub mod cli;
 
 pub const VERSION: &'static str = env!("CARGO_PKG_VERSION");
+
+lazy_static! {
+    static ref SELECT_SEPARATOR_RE: Regex = Regex::new("(,|，)").unwrap();
+}
 
 pub fn read_input_as_string(msg: &str) -> Result<String> {
     let mut s = String::new();
@@ -48,4 +54,41 @@ pub fn get_bytes(url: &str, headers: &HashMap<String, String>) -> Result<Vec<u8>
     let mut buf: Vec<u8> = vec![];
     resp.copy_to(&mut buf)?;
     Ok(buf)
+}
+
+pub fn parse_select_rule(input_s: &str) -> Result<Vec<usize>> {
+    let multi_t: Vec<&str> = SELECT_SEPARATOR_RE
+        .split(&input_s)
+        .map(|s| s.trim())
+        .collect();
+
+    // 剥离 ^n
+    let excludes: Vec<i32> = multi_t
+        .iter()
+        .filter(|s| s.starts_with("^"))
+        .map(|s| s[1..s.len()].parse::<i32>().unwrap_or(-1))
+        .collect();
+    // 剥离 n
+    let mut ones: Vec<i32> = multi_t
+        .iter()
+        .filter(|s| s.parse::<usize>().is_ok())
+        .map(|s| s.parse::<i32>().unwrap())
+        .collect();
+    // 将 s-e 范围数字展开并添加至 ones 中
+    for range in multi_t.iter().filter(|s| s.find("-").is_some()) {
+        let (start, end) = {
+            let rs = range.split("-").collect::<Vec<&str>>();
+            (rs[0].parse::<usize>()?, rs[1].parse::<usize>()?)
+        };
+        if start < end {
+            for n in start..(end + 1) {
+                ones.push(n as i32);
+            }
+        }
+    }
+    Ok(ones
+        .iter()
+        .filter(|i| !excludes.contains(i))
+        .map(|i| *i as usize)
+        .collect())
 }
