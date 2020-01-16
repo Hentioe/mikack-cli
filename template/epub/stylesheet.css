@@ -11,7 +11,7 @@ body {
   justify-content: center;
   width: 100%;
   background: #000;
-  min-height: 95vh;
+  min-height: 100vh;
 }
 .albumimg {
   object-fit: contain;
