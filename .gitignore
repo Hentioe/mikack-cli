@@ -2,3 +2,4 @@
 **/*.rs.bk
 
 /_output/
+/_cache/

@@ -2,7 +2,7 @@ use lazy_static::lazy_static;
 pub use manga_rs::error::*;
 use regex::Regex;
 use reqwest::{
-    blocking::Client,
+    blocking::{Client, Response},
     header::{HeaderMap, HeaderName, HeaderValue},
 };
 use std::collections::HashMap;
@@ -12,6 +12,7 @@ use std::io::{stdin, stdout, Write};
 use std::path::PathBuf;
 
 pub mod cli;
+pub mod exporters;
 
 pub const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
@@ -27,21 +28,25 @@ pub fn read_input_as_string(msg: &str) -> Result<String> {
     Ok(s.trim().to_string())
 }
 
-static OUTPUT_DIR: &'static str = "_output";
+pub static OUTPUT_DIR: &'static str = "_output";
+pub static CACHE_DIR: &'static str = "_cache";
 
-pub fn save_to(base_dir: &str, name: &str, bytes: &Vec<u8>) -> Result<()> {
-    let mut dir = PathBuf::from(OUTPUT_DIR);
-    dir.push(base_dir);
-    fs::create_dir_all(dir)?;
-    let mut fpath = PathBuf::from(OUTPUT_DIR);
-    fpath.push(base_dir);
+pub fn cache_to(base_dir: &str, name: &str, bytes: &Vec<u8>) -> Result<()> {
+    let mut base_path = PathBuf::from(CACHE_DIR);
+    base_path.push(base_dir);
+    save_to(base_path, name, bytes)
+}
+
+pub fn save_to(base_path: PathBuf, name: &str, bytes: &Vec<u8>) -> Result<()> {
+    fs::create_dir_all(&base_path)?;
+    let mut fpath = base_path.clone();
     fpath.push(name);
     let mut file = File::create(fpath)?;
     file.write_all(bytes)?;
     Ok(())
 }
 
-pub fn get_bytes(url: &str, headers: &HashMap<String, String>) -> Result<Vec<u8>> {
+pub fn get_resp(url: &str, headers: &HashMap<String, String>) -> Result<Response> {
     let mut header_map = HeaderMap::new();
     for (key, value) in headers {
         header_map.insert(
@@ -49,11 +54,12 @@ pub fn get_bytes(url: &str, headers: &HashMap<String, String>) -> Result<Vec<u8>
             HeaderValue::from_str(&value)?,
         );
     }
-    let client = Client::new().get(url).headers(header_map);
-    let mut resp = client.send()?;
-    let mut buf: Vec<u8> = vec![];
-    resp.copy_to(&mut buf)?;
-    Ok(buf)
+    let client = Client::builder()
+        .danger_accept_invalid_certs(true)
+        .build()?
+        .get(url)
+        .headers(header_map);
+    Ok(client.send()?)
 }
 
 pub fn parse_select_rule(input_s: &str) -> Result<Vec<usize>> {

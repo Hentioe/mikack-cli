@@ -1,5 +1,5 @@
 use indicatif::ProgressBar;
-use manga::*;
+use manga::{exporters::*, *};
 use manga_rs::{
     extractors::{self, DomainRoute, Extractor},
     models::*,
@@ -82,10 +82,22 @@ fn process_save(extractor: &ExtractorObject, chapter: &mut Chapter) -> Result<()
     let pages_iter = extractor.pages_iter(chapter)?;
     let base_dir = pages_iter.chapter_title_clone();
     let bar = ProgressBar::new(pages_iter.total as u64);
-    for page in pages_iter {
-        let bytes = get_bytes(&page.address, &page_headers)?;
-        save_to(&base_dir, &page.fname(), &bytes)?;
+    let mut pages = vec![];
+    for mut page in pages_iter {
+        let mut resp = get_resp(&page.address, &page_headers)?;
+        let mut buf = vec![];
+        resp.copy_to(&mut buf)?;
+        cache_to(&base_dir, &page.fname, &buf)?;
+        if let Some(mime) = resp.headers().get(reqwest::header::CONTENT_TYPE) {
+            page.fmime = mime.to_str()?.to_string();
+        }
+        pages.push(page);
         bar.inc(1);
     }
+    chapter.pages = pages;
+    let metadata = serde_json::to_string(chapter)?;
+    cache_to(&base_dir, "metadata.json", &metadata.as_bytes().to_vec())?;
+    let exporter = exporters::epub::Epub::from_cache(&base_dir)?;
+    exporter.expo()?;
     Ok(())
 }

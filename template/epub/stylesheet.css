@@ -1,0 +1,19 @@
+body {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+.album {
+  display: -webkit-flex;
+  display: flex;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  width: 100%;
+  background: #000;
+  min-height: 100vh;
+}
+.albumimg {
+  object-fit: contain;
+  max-width: 100%;
+}

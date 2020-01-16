@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uuid_id" version="2.0">
+   <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+      <dc:title>{{ chapter.title }}</dc:title>
+      <dc:creator opf:role="aut" opf:file-as="manga-cli">manga-cli</dc:creator>
+      <dc:identifier opf:scheme="uuid" id="uuid_id">{{ uuid }}</dc:identifier>
+      <dc:publisher>manga</dc:publisher>
+      <dc:contributor opf:file-as="manga" opf:role="bkp">manga ({{ version }}) [https://manga.bluerain.io]</dc:contributor>
+      <dc:date>{{ date_time }}</dc:date>
+      <dc:language>eng</dc:language>
+      <meta name="cover" content="cover" />
+   </metadata>
+   <manifest>
+      <item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml" />
+      <item href="stylesheet.css" id="css" media-type="text/css" />
+      <item href="start.xhtml" id="start" media-type="application/xhtml+xml" />
+      {% for p in chapter.pages %}
+      <item href="{{ p.n }}.xhtml" id="page{{ p.n }}" media-type="application/xhtml+xml" />
+      <item href="{{ p.fname }}" id="img{{ p.n }}" media-type="{{ p.fmime }}" />
+      {% endfor %}
+      <item href="{{ chapter.pages.0.fname }}" id="cover" media-type="{{ chapter.pages.0.fmime }}" />
+   </manifest>
+   <spine toc="ncx">
+      <itemref idref="start" />
+      {% for p in chapter.pages %}
+      <itemref idref="page{{ p.n }}" />
+      {% endfor %}
+   </spine>
+   <guide />
+</package>

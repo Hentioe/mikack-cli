@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="en">
+    <head>
+        <meta content="{{ uuid }}" name="dtb:uid" />
+        <meta content="2" name="dtb:depth" />
+        <meta content="manga-rs" name="dtb:generator" />
+        <meta content="0" name="dtb:totalPageCount" />
+        <meta content="0" name="dtb:maxPageNumber" />
+    </head>
+    <docTitle>
+        <text>{{ chapter.title }}</text>
+    </docTitle>
+    <navMap>
+        <navPoint id="navPoint-00" playOrder="0">
+            <navLabel>
+                <text>关于</text>
+            </navLabel>
+            <content src="start.xhtml" />
+        </navPoint>
+        {% for p in chapter.pages %}
+        <navPoint id="navPoint-{{ p.n }}" playOrder="{{ p.n }}">
+            <navLabel>
+                <text>{{ p.n }}P</text>
+            </navLabel>
+            <content src="{{ p.n }}.xhtml" />
+        </navPoint>
+        {% endfor %}
+    </navMap>
+</ncx>
