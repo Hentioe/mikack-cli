@@ -83,7 +83,8 @@ fn process_save(extractor: &ExtractorObject, chapter: &mut Chapter) -> Result<()
     let base_dir = pages_iter.chapter_title_clone();
     let bar = ProgressBar::new(pages_iter.total as u64);
     let mut pages = vec![];
-    for mut page in pages_iter {
+    for page in pages_iter {
+        let mut page = page?;
         let mut resp = get_resp(&page.address, &page_headers)?;
         let mut buf = vec![];
         resp.copy_to(&mut buf)?;
