@@ -14,4 +14,12 @@ pub fn build_cli<'a, 'b>() -> App<'a, 'b> {
                 .takes_value(true)
                 .required(false),
         )
+        .arg(
+            Arg::with_name("save-format")
+                .long("format")
+                .short("f")
+                .help("Saved format (eg: epub)")
+                .takes_value(true)
+                .required(false),
+        )
 }

@@ -1,12 +1,22 @@
 use indicatif::ProgressBar;
-use manga::{exporters::*, *};
+use lazy_static::lazy_static;
+use manga::{exporters, *};
 use manga_rs::{
     extractors::{self, DomainRoute, Extractor},
     models::*,
 };
+use std::collections::HashMap;
+use std::sync::Mutex;
+
+lazy_static! {
+    static ref CONFIG: Mutex<HashMap<&'static str, String>> = Mutex::new(HashMap::new());
+}
 
 fn main() -> Result<()> {
     let matches = cli::build_cli().get_matches();
+    if let Some(format) = matches.value_of("save-format") {
+        CONFIG.lock().unwrap().insert("format", format.to_string());
+    }
     if let Some(url) = matches.value_of("url") {
         return process_url(url);
     }
@@ -47,7 +57,7 @@ fn get_exrt(domain: String) -> Result<&'static ExtractorObject> {
 }
 
 fn process_index(extractor: &ExtractorObject, index: usize) -> Result<()> {
-    let spinner = create_spinner("Getting...");
+    let spinner = create_spinner("Fetching...");
     let mut comics = extractor.index(index as u32)?;
     spinner.finish_and_clear();
     for (i, comic) in comics.iter().enumerate() {
@@ -83,7 +93,7 @@ fn process_chapters(extractor: &ExtractorObject, comic: &mut Comic) -> Result<()
 
 fn process_save(extractor: &ExtractorObject, chapter: &mut Chapter) -> Result<()> {
     let page_headers = chapter.page_headers.clone();
-    let spinner = create_spinner("Getting...");
+    let spinner = create_spinner("Fetching...");
     let pages_iter = extractor.pages_iter(chapter)?;
     spinner.finish_and_clear();
     let base_dir = pages_iter.chapter_title_clone();
@@ -101,10 +111,21 @@ fn process_save(extractor: &ExtractorObject, chapter: &mut Chapter) -> Result<()
         pages.push(page);
         bar.inc(1);
     }
+    bar.finish_and_clear();
     chapter.pages = pages;
     let metadata = serde_json::to_string(chapter)?;
     cache_to(&base_dir, "metadata.json", &metadata.as_bytes().to_vec())?;
-    let exporter = exporters::epub::Epub::from_cache(&base_dir)?;
-    exporter.expo()?;
+    let exporter = exporters::gen_expo(
+        CONFIG
+            .lock()
+            .unwrap()
+            .get("format")
+            .unwrap_or(&"none".to_string()),
+        &base_dir,
+    )?;
+    let spinner = create_spinner("Saving...");
+    let path = exporter.expo()?;
+    spinner.finish_and_clear();
+    println!("Succeed: {}", path.to_str().unwrap_or(&chapter.title));
     Ok(())
 }

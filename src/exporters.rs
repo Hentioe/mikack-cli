@@ -73,4 +73,13 @@ fn archive(
     Ok(())
 }
 
+pub mod copy;
 pub mod epub;
+
+pub fn gen_expo(format: &str, base_dir: &str) -> Result<Box<dyn Exporter + Send + Sync>> {
+    match format {
+        "epub" => Ok(Box::new(epub::Epub::from_cache(base_dir)?)),
+        "none" => Ok(Box::new(copy::Copy::from_cache(base_dir)?)),
+        _ => Err(err_msg(format!("Unsupported format: `{}`", format))),
+    }
+}

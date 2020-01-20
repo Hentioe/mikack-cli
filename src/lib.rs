@@ -19,10 +19,10 @@ pub const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
 pub fn create_spinner(message: &str) -> ProgressBar {
     let pb = ProgressBar::new_spinner();
-    pb.enable_steady_tick(120);
+    pb.enable_steady_tick(50);
     pb.set_style(
         ProgressStyle::default_spinner()
-            .tick_chars("⠁⠂⠄⡀⢀⠠⠐⠈ ")
+            .tick_chars("⠁⠂⠄⡀⢀⠠⠐⠈")
             .template("{prefix:.bold.dim} {spinner} {wide_msg}"),
     );
     pb.set_message(message);
