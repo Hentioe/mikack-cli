@@ -47,7 +47,9 @@ fn get_exrt(domain: String) -> Result<&'static ExtractorObject> {
 }
 
 fn process_index(extractor: &ExtractorObject, index: usize) -> Result<()> {
+    let spinner = create_spinner("Getting...");
     let mut comics = extractor.index(index as u32)?;
+    spinner.finish_and_clear();
     for (i, comic) in comics.iter().enumerate() {
         println!("{}. {}", i + 1, comic.title);
     }
@@ -64,7 +66,9 @@ fn process_index(extractor: &ExtractorObject, index: usize) -> Result<()> {
 }
 
 fn process_chapters(extractor: &ExtractorObject, comic: &mut Comic) -> Result<()> {
+    let spinner = create_spinner("Fetching...");
     extractor.fetch_chapters(comic)?;
+    spinner.finish_and_clear();
     for (i, chapter) in comic.chapters.iter().enumerate() {
         println!("{}. {}", i + 1, chapter.title);
     }
@@ -79,7 +83,9 @@ fn process_chapters(extractor: &ExtractorObject, comic: &mut Comic) -> Result<()
 
 fn process_save(extractor: &ExtractorObject, chapter: &mut Chapter) -> Result<()> {
     let page_headers = chapter.page_headers.clone();
+    let spinner = create_spinner("Getting...");
     let pages_iter = extractor.pages_iter(chapter)?;
+    spinner.finish_and_clear();
     let base_dir = pages_iter.chapter_title_clone();
     let bar = ProgressBar::new(pages_iter.total as u64);
     let mut pages = vec![];

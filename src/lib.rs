@@ -1,3 +1,4 @@
+use indicatif::{ProgressBar, ProgressStyle};
 use lazy_static::lazy_static;
 pub use manga_rs::error::*;
 use regex::Regex;
@@ -16,8 +17,16 @@ pub mod exporters;
 
 pub const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
-lazy_static! {
-    static ref SELECT_SEPARATOR_RE: Regex = Regex::new("(,|，)").unwrap();
+pub fn create_spinner(message: &str) -> ProgressBar {
+    let pb = ProgressBar::new_spinner();
+    pb.enable_steady_tick(120);
+    pb.set_style(
+        ProgressStyle::default_spinner()
+            .tick_chars("⠁⠂⠄⡀⢀⠠⠐⠈ ")
+            .template("{prefix:.bold.dim} {spinner} {wide_msg}"),
+    );
+    pb.set_message(message);
+    pb
 }
 
 pub fn read_input_as_string(msg: &str) -> Result<String> {
@@ -60,6 +69,10 @@ pub fn get_resp(url: &str, headers: &HashMap<String, String>) -> Result<Response
         .get(url)
         .headers(header_map);
     Ok(client.send()?)
+}
+
+lazy_static! {
+    static ref SELECT_SEPARATOR_RE: Regex = Regex::new("(,|，)").unwrap();
 }
 
 pub fn parse_select_rule(input_s: &str) -> Result<Vec<usize>> {
