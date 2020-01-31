@@ -4,7 +4,7 @@
 
 ## 说明
 
-基于跨平台的 [manga-rs](https://github.com/Hentioe/manga-rs) 库，支持大量的在线漫画平台（支持详情请参考 manga-rs 项目说明）。
+基于跨平台的 [manga-rs](https://github.com/Hentioe/manga-rs) 库，支持大量的在线漫画平台（详情请参考 manga-rs 项目说明）。
 
 本工具是 manga-rs 周边项目的一员，它还包括有基于同一个核心库的桌面版和手机版。
 
