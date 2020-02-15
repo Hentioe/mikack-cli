@@ -20,6 +20,8 @@ pub fn xml_syntax_escaped<T: Into<String>>(text: T) -> String {
         .replace("<", "&lt;")
         .replace(">", "&gt;")
         .replace("&", "&amp;")
+        .replace("'", "&apos;")
+        .replace("\"", "&quot;")
         .to_string()
 }
 
