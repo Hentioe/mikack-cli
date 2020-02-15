@@ -1,5 +1,5 @@
 use super::*;
-use crate::{CACHE_DIR, OUTPUT_DIR, VERSION};
+use crate::{xml_syntax_escaped, CACHE_DIR, OUTPUT_DIR, VERSION};
 use chrono::{offset::Utc, DateTime};
 use manga_rs::models::Chapter;
 use std::fs::{copy, create_dir_all, remove_dir_all};
@@ -10,6 +10,7 @@ use uuid::Uuid;
 pub struct Epub {
     uuid: String,
     chapter: Chapter,
+    escaped_title: String,
 }
 
 static REPO_URL: &'static str = "https://github.com/Hentioe/manga-cli";
@@ -19,6 +20,7 @@ impl Epub {
         let template = include_str!("../../template/epub/start.xhtml");
         let mut ctx = Context::new();
         ctx.insert("chapter", &self.chapter);
+        ctx.insert("title", &self.escaped_title);
         ctx.insert("repo", REPO_URL);
         Ok(Tera::one_off(&template, &ctx, false)?)
     }
@@ -26,7 +28,7 @@ impl Epub {
     fn render_page(&self, fname: &str) -> Result<String> {
         let template = include_str!("../../template/epub/p.xhtml");
         let mut ctx = Context::new();
-        ctx.insert("name", &self.chapter.title);
+        ctx.insert("name", &self.escaped_title);
         ctx.insert("fname", &fname);
         Ok(Tera::one_off(&template, &ctx, false)?)
     }
@@ -35,6 +37,7 @@ impl Epub {
         let template = include_str!("../../template/epub/metadata.opf");
         let mut ctx = Context::new();
         ctx.insert("chapter", &self.chapter);
+        ctx.insert("title", &self.escaped_title);
         ctx.insert("uuid", &self.uuid);
         ctx.insert("version", VERSION);
         ctx.insert("date_time", &DateTime::<Utc>::from(Utc::now()).to_rfc3339());
@@ -50,6 +53,7 @@ impl Epub {
         let template = include_str!("../../template/epub/toc.ncx");
         let mut ctx = Context::new();
         ctx.insert("chapter", &self.chapter);
+        ctx.insert("title", &self.escaped_title);
         ctx.insert("uuid", &self.uuid);
 
         Ok(Tera::one_off(&template, &ctx, false)?)
@@ -65,6 +69,7 @@ impl Exporter for Epub {
         let chapter = metadata(base_dir)?;
         Ok(Self {
             uuid: Uuid::new_v4().to_hyphenated().to_string(),
+            escaped_title: xml_syntax_escaped(&chapter.title),
             chapter,
         })
     }

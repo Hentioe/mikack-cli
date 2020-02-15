@@ -15,6 +15,14 @@ use std::path::PathBuf;
 pub mod cli;
 pub mod exporters;
 
+pub fn xml_syntax_escaped<T: Into<String>>(text: T) -> String {
+    text.into()
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace("&", "&amp;")
+        .to_string()
+}
+
 pub const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
 pub fn create_spinner(message: &str) -> ProgressBar {

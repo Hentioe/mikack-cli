@@ -8,7 +8,7 @@
         <meta content="0" name="dtb:maxPageNumber" />
     </head>
     <docTitle>
-        <text>{{ chapter.title }}</text>
+        <text>{{ title }}</text>
     </docTitle>
     <navMap>
         <navPoint id="navPoint-00" playOrder="0">
