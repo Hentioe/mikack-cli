@@ -817,7 +817,7 @@ dependencies = [
 [[package]]
 name = "manga-rs"
 version = "0.1.0-dev"
-source = "git+https://github.com/Hentioe/manga-rs#cfcaf80e97363fae809d6a45279238d7c37402b9"
+source = "git+https://github.com/Hentioe/manga-rs#5bb9de5f13a360783ebda9553b57ac40c8144e6a"
 dependencies = [
  "base64 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "duang 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
