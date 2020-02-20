@@ -3,7 +3,7 @@
     <head>
         <meta content="{{ uuid }}" name="dtb:uid" />
         <meta content="2" name="dtb:depth" />
-        <meta content="manga-rs" name="dtb:generator" />
+        <meta content="mikack" name="dtb:generator" />
         <meta content="0" name="dtb:totalPageCount" />
         <meta content="0" name="dtb:maxPageNumber" />
     </head>

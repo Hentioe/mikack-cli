@@ -1,6 +1,6 @@
 use crate::CACHE_DIR;
-use manga_rs::error::*;
-use manga_rs::models::Chapter;
+use mikack::error::*;
+use mikack::models::Chapter;
 use scan_dir::ScanDir;
 use std::fs::{create_dir_all, File};
 use std::io::prelude::*;

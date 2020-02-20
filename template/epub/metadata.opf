@@ -2,10 +2,10 @@
 <package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uuid_id" version="2.0">
    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
       <dc:title>{{ title }}</dc:title>
-      <dc:creator opf:role="aut" opf:file-as="manga-cli">manga-cli</dc:creator>
+      <dc:creator opf:role="aut" opf:file-as="mikack-cli">mikack-cli</dc:creator>
       <dc:identifier opf:scheme="uuid" id="uuid_id">{{ uuid }}</dc:identifier>
-      <dc:publisher>manga</dc:publisher>
-      <dc:contributor opf:file-as="manga" opf:role="bkp">manga ({{ version }}) [https://manga.bluerain.io]</dc:contributor>
+      <dc:publisher>mikack</dc:publisher>
+      <dc:contributor opf:file-as="mikack" opf:role="bkp">mikack ({{ version }}) [https://mikack.bluerain.io]</dc:contributor>
       <dc:date>{{ date_time }}</dc:date>
       <dc:language>eng</dc:language>
       <meta name="cover" content="cover" />

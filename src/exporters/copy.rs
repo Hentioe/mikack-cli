@@ -1,6 +1,6 @@
 use super::*;
 use crate::{CACHE_DIR, OUTPUT_DIR};
-use manga_rs::models::Chapter;
+use mikack::models::Chapter;
 use std::fs::{copy, create_dir_all};
 use std::path::PathBuf;
 

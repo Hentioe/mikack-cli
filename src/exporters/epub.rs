@@ -1,7 +1,7 @@
 use super::*;
 use crate::{xml_syntax_escaped, CACHE_DIR, OUTPUT_DIR, VERSION};
 use chrono::{offset::Utc, DateTime};
-use manga_rs::models::Chapter;
+use mikack::models::Chapter;
 use std::fs::{copy, create_dir_all, remove_dir_all};
 use std::path::PathBuf;
 use tera::{Context, Tera};
@@ -13,7 +13,7 @@ pub struct Epub {
     escaped_title: String,
 }
 
-static REPO_URL: &'static str = "https://github.com/Hentioe/manga-cli";
+static REPO_URL: &'static str = "https://github.com/Hentioe/mikack-cli";
 
 impl Epub {
     fn render_start_page(&self) -> Result<String> {
