@@ -1,6 +1,6 @@
 use indicatif::{ProgressBar, ProgressStyle};
 use lazy_static::lazy_static;
-pub use manga_rs::error::*;
+pub use mikack::error::*;
 use regex::Regex;
 use reqwest::{
     blocking::{Client, Response},

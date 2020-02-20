@@ -1,10 +1,10 @@
 use indicatif::ProgressBar;
 use lazy_static::lazy_static;
-use manga::{exporters, *};
-use manga_rs::{
+use mikack::{
     extractors::{self, DomainRoute, Extractor},
     models::*,
 };
+use mikack_cli::{exporters, *};
 use std::collections::HashMap;
 use std::sync::Mutex;
 

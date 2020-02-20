@@ -1,24 +1,24 @@
-# manga-cli
+# mikack-cli
 
-一个高质量重构的 manga 项目分支，专注于为 CLI 提供功能。
+一个高质量重构的 mikack（原 manga-cli）项目分支，专注于为 CLI 提供功能。
 
 ## 说明
 
-基于跨平台的 [manga-rs](https://github.com/Hentioe/manga-rs) 库，支持大量的在线漫画平台（详情请参考 manga-rs 项目说明）。
+基于跨平台的 [mikack](https://github.com/Hentioe/mikack) 库，支持大量的在线漫画平台（详情请参考 mikack 项目说明）。
 
-本工具是 manga-rs 周边项目的一员，它还包括有基于同一个核心库的桌面版和手机版。
+本工具是 mikack 周边项目的一员，它还包括有基于同一个核心库的桌面版和手机版。
 
 ## 使用方式
 
 - 命令行帮助：
 
   ```
-  manga-cli 0.1.0-dev
+  mikack-cli 0.1.0-dev
   Hentioe (绅士喵), <me@bluerain.io>
   A tool for exporting online comics
 
   USAGE:
-      manga-cli [OPTIONS] [url]
+      mikack-cli [OPTIONS] [url]
 
   FLAGS:
       -h, --help       Prints help information
@@ -35,13 +35,13 @@
 
   - 直接粘贴 URL：
 
-    `manga-cli https://www.dm5.com/m136026/`
+    `mikack-cli https://www.dm5.com/m136026/`
 
     支持漫画主页或具体的阅读页面，前者展示章节（话）列表，后者直接进行下载。
 
   - 指定保存格式：
 
-    `manga-cli -f epub https://www.dm5.com/m136026/`
+    `mikack-cli -f epub https://www.dm5.com/m136026/`
 
     若不指定，则仅仅将图片下载到目录。
 
@@ -56,4 +56,4 @@
 - Calibre（Windows/Linux/Mac）
 - Lithium（Android）
 
-在旧版 manga 项目中支持了更多的格式，例如 mobi/azw3/zip。因为某些原因，暂且没有支持这些格式。顾及到 Kindle 用户，mobi/azw3 格式将会支持，而 zip 一类的压缩格式请自行使用压缩软件。
+在旧版 mikack 项目中支持了更多的格式，例如 mobi/azw3/zip。因为某些原因，暂且没有支持这些格式。顾及到 Kindle 用户，mobi/azw3 格式将会支持，而 zip 一类的压缩格式请自行使用压缩软件。

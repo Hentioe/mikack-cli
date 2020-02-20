@@ -1,20 +1,21 @@
 [package]
-name = "manga-cli"
+name = "mikack-cli"
 version = "0.1.0-dev"
 authors = ["Hentioe <me@bluerain.io>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
 [lib]
-name = "manga"
+name = "mikack_cli"
 path = "src/lib.rs"
 
 [[bin]]
-name = "manga-cli"
+name = "mikack-cli"
 path = "src/bin/main.rs"
 
 [dependencies]
-manga-rs = { git = "https://github.com/Hentioe/manga-rs", branch = "master" }
+mikack = { git = "https://github.com/Hentioe/mikack", branch = "master" }
 lazy_static = "1.4.0"
 clap = "2.33.0"
 reqwest = {version = "0.10.1"}

@@ -4,7 +4,7 @@ use clap::{App, Arg};
 const AUTHOR: &'static str = "Hentioe (绅士喵), <me@bluerain.io>";
 
 pub fn build_cli<'a, 'b>() -> App<'a, 'b> {
-    App::new("manga-cli")
+    App::new("mikack-cli")
         .version(VERSION)
         .about("A tool for exporting online comics")
         .author(AUTHOR)
